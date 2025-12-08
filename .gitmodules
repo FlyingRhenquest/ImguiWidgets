@@ -1,0 +1,6 @@
+[submodule "vendor"]
+	path = vendor
+	url = https://github.com/ocornut/imgui.git
+[submodule "RequirementsManager"]
+	path = RequirementsManager
+	url = https://github.com/FlyingRhenquest/RequirementsManager.git
