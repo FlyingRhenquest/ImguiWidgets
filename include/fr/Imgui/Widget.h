@@ -18,17 +18,17 @@
 
 #include <boost/signals2.hpp>
 #include <imgui.h>
+#include <fr/Imgui/WidgetApi.h>
 #include <fr/Imgui/Window.h>
 
 namespace fr::Imgui {
 
-  class Window;
   /**
    * A widget is a non-window UI element that renders
    * some sort of data.
    */
   
-  class Widget {
+  class Widget : public WidgetApi {
   public:
     using Type = Widget;
     using PtrType = std::shared_ptr<Widget>;
@@ -55,18 +55,18 @@ namespace fr::Imgui {
     
     virtual ~Widget() {}
 
-    virtual void setParent(std::shared_ptr<Window> p) {
+    void setParent(std::shared_ptr<Window> p) override {
       _parent = p;
     }
 
-    std::string getLabel() {
+    std::string getLabel() override {
       return _label;
     }
 
-    virtual void begin() {
+    virtual void begin() override {
     }
 
-    virtual void end() {
+    virtual void end() override {
     }
     
   };

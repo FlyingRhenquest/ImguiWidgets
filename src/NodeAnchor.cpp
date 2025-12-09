@@ -1,0 +1,170 @@
+/**
+ * Copyright 2025 Bruce Ide
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+
+#include <fr/Imgui/NodeAnchor.h>
+#include <iostream>
+
+namespace fr::Imgui {
+
+  std::shared_ptr<NodeDragPayload> NodeAnchor::_currentDrag;
+  
+  void NodeAnchor::setParent(std::shared_ptr<NodeWindow> p) {
+    Parent::setParent(p);
+    _node = p->getNode();
+  }
+
+  void NodeAnchor::setLinkColor(ImU32 color) {
+    _linkColor = color;
+  }
+
+  void NodeAnchor::establishConnection(std::shared_ptr<NodeDragPayload> connection) {
+    // Check _connections and don't do anything at this point if the
+    // node ID is already in the connections (This keeps us from getting
+    // into an infinite loop of establishing connections)
+    std::cout << "Examining " << connection->sourceNode->idString() << std::endl;
+    if (!_connections.contains(connection->sourceNode->idString())) {
+      auto otherSide = std::make_shared<NodeDragPayload>();
+      _connections[connection->sourceNode->idString()] = connection;
+      otherSide->dragSource = shared_from_this();
+      otherSide->sourceNode = _node;
+      otherSide->anchorType = _type;
+      if (_type == AnchorType::Up) {
+        _node->addUp(connection->sourceNode);
+      } else if (_type == AnchorType::Down) {
+        _node->addDown(connection->sourceNode);
+      }
+      connection->dragSource->establishConnection(otherSide);
+    }
+  }
+
+  void NodeAnchor::removeConnection(std::shared_ptr<NodeDragPayload> connection) {
+    // If connections contain the node then remove it, otherwise
+    // do nothing
+    if (_connections.contains(connection->sourceNode->idString())) {
+      auto otherSide = std::make_shared<NodeDragPayload>();
+      _connections.erase(connection->sourceNode->idString());
+      otherSide->dragSource = shared_from_this();
+      otherSide->sourceNode = _node;
+      otherSide->anchorType = _type;
+      if (_type == AnchorType::Up) {
+        _node->removeUp(connection->sourceNode);
+      } else if (_type == AnchorType::Down) {
+        _node->removeDown(connection->sourceNode);
+      }
+      connection->dragSource->removeConnection(otherSide);
+    }
+  }
+
+  void NodeAnchor::drawConnections() {
+    for (auto [id, connection] : _connections) {
+      ImDrawList* drawList = ImGui::GetForegroundDrawList();
+      ImVec2 p1 = _center;
+      ImVec2 p4 = connection->dragSource->getCenter();
+      ImVec2 p2 = ImVec2(p1.x + 50.0f, p1.y);
+      ImVec2 p3 = ImVec2(p4.x - 50.0f, p4.y);
+      drawList->AddBezierCubic(p1, p2, p3, p4, _linkColor, 2, 4);
+    }
+  }  
+
+  void NodeAnchor::begin() {
+    if (!_node) {
+      if (auto p = std::dynamic_pointer_cast<NodeWindow>(_parent)) {
+      _node = p->getNode();
+      }
+    }
+
+    drawConnections();
+    
+    // Color to render this time around
+    ImU32 color;
+    // Set an invisible button to detect hover state
+    ImGui::SetCursorScreenPos(_min);
+    ImGui::InvisibleButton(_label.c_str(), _bbsize);
+
+    if (ImGui::IsItemHovered()) {
+      color = _hoverColor;
+      _hovered = true;
+    } else {
+      color = _color;
+      _hovered = false;
+    }
+
+    // Handle drags
+    if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+      if (!_currentDrag || !_dragging) {
+        std::cout << "BeginDropSource: " << _node->idString() << std::endl;
+        _currentDrag = std::make_shared<NodeDragPayload>();
+        _currentDrag->dragSource = shared_from_this();
+        _currentDrag->sourceNode = _node;
+        _currentDrag->anchorType = _type;
+        _dragging = true;
+      }
+      ImGui::SetDragDropPayload("NodeLinkPayload", _currentDrag.get(), sizeof(NodeDragPayload*));
+      
+      ImGui::EndDragDropSource();
+    }
+
+    // Handle drawing the bezier between the drag start point and
+    // where the mouse is now
+    if (_dragging && ImGui::IsMouseDragging(ImGuiMouseButton_Left)) {
+      // Draw a bezier to the current mouse location while we're dragging
+      ImVec2 cursor = ImGui::GetIO().MousePos;
+      ImDrawList* drawList = ImGui::GetForegroundDrawList();
+      ImVec2 p1 = _center;
+      ImVec2 p4 = cursor;
+      ImVec2 p2 = ImVec2(p1.x + 50.0f, p1.y);
+      ImVec2 p3 = ImVec2(p4.x - 50.0f, p4.y);
+      drawList->AddBezierCubic(p1, p2, p3, p4, _linkColor, 2, 4);
+    } else if (_dragging && !ImGui::IsMouseDown(ImGuiMouseButton_Left)) {
+      std::cout << "Dragging stopped" << std::endl;
+      _dragging = false;
+    }
+
+    // Handle Drops
+    if (ImGui::BeginDragDropTarget()) {
+      std::cout << "BeginDragDropTarget to: " << _node->idString() << std::endl;
+      if (const ImGuiPayload *payload = ImGui::AcceptDragDropPayload("NodeLinkPayload")) {
+        std::shared_ptr<NodeDragPayload> connection;
+        connection.swap(_currentDrag);
+        
+        std::cout << "Accepted payload from: " << connection->sourceNode->idString() << std::endl;
+        // If we already have a link to the payload, remove the connection instead
+        // of creating it.
+        if (!_connections.contains(connection->sourceNode->idString())) {
+          establishConnection(connection);
+        } else {
+          removeConnection(connection);
+        }        
+      }
+
+      ImGui::EndDragDropTarget();
+    }
+      
+    ImDrawList *drawList = ImGui::GetWindowDrawList();
+    drawList->AddCircleFilled(_center, _radius, color);
+  }
+
+  void NodeAnchor::end() {}
+
+  void NodeAnchor::setCenter(ImVec2 center) {
+    _center = center;
+    _min.x = center.x - _radius;
+    _min.y = center.y - _radius;
+    _bbsize.x = _radius * 2;
+    _bbsize.y = _radius * 2;
+  }
+  
+}

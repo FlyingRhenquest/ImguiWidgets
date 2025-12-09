@@ -24,6 +24,7 @@ set(LINK_LIBRARIES "")
 
 set(LIBRARY_SOURCE
   "${CMAKE_CURRENT_SOURCE_DIR}/src/NodeWindow.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/NodeAnchor.cpp"
 )
 
 if (USE_REQUIREMENTS_MANAGER)

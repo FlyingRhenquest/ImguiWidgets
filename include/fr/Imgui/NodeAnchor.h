@@ -17,12 +17,17 @@
 #pragma once
 
 #include <imgui.h>
-#include <fr/Imgui/Window.h>
+#include <fr/Imgui/NodeWindow.h>
+#include <fr/Imgui/Widget.h>
+#include <fr/RequirementsManager.h>
 #include <memory>
 #include <unordered_map>
 
 namespace fr::Imgui {
 
+  class NodeAnchor;
+  class NodeWindow;
+  
   /**
    * NodeAnchor needs to know what type of anchor it is
    */
@@ -34,6 +39,16 @@ namespace fr::Imgui {
     Left, // left list type
     Right // right list type
   };
+
+  /**
+   * Drag and drop payload to connect nodes
+   */
+
+  struct NodeDragPayload {
+    std::shared_ptr<NodeAnchor> dragSource;
+    fr::RequirementsManager::Node::PtrType sourceNode;
+    AnchorType anchorType;
+  };
   
   /**
    * NodeAnchor displays an anchor that can be used to connect
@@ -44,7 +59,9 @@ namespace fr::Imgui {
    * up the center value from the parent window.
    */
   
-  class NodeAnchor : public Widget {
+  class NodeAnchor : public Widget, public std::enable_shared_from_this<NodeAnchor> {
+    // Global default link color
+    static const ImU32 _defaultLinkColor = IM_COL32(255,255,255,255);
 
     // Color the anchor usually is
     ImU32 _color;
@@ -62,8 +79,25 @@ namespace fr::Imgui {
     ImVec2 _bbsize;
     // Anchor hovered flag
     bool _hovered;
+    // Indicates dragging is happening
+    bool _dragging;
     // Parent node
+    ImU32 _linkColor;
     fr::RequirementsManager::Node::PtrType _node;
+
+    // Imgui doesn't seem to like passing shared pointers around
+    // so I'm just going to hook into the drag/drop instrumentation
+    // but stash the initiating drag data here. There should only
+    // ever be one at a time.
+    static std::shared_ptr<NodeDragPayload> _currentDrag;
+
+    /**
+     * These are all the connections for the node the parent window
+     * holds. You can make new ones in the GUI but when the nodes are
+     * initally loaded, the existing connections will have to be
+     * populated by some external (to this NodeAnchor) entity.
+     */
+    std::unordered_map<std::string, std::shared_ptr<NodeDragPayload>> _connections;
     
   public:
 
@@ -80,50 +114,44 @@ namespace fr::Imgui {
       _radius(radius),
       _min(0,0),
       _bbsize(0,0),
-      hovered(false) {
+      _hovered(false),
+      _dragging(false),
+      _linkColor(_defaultLinkColor) {
     }
 
     virtual ~NodeAnchor() {}
 
-    // Try to retrieve node now if possible.
-    void setParent(std::shared_ptr<Window> p) override {
-      Parent::setParent(p);
-      _node = p->getNode();
+    void setParent(std::shared_ptr<NodeWindow> p);
+    
+    void setLinkColor(ImU32 color);
+
+    ImVec2 getCenter() {
+      return _center;
     }
 
-    void begin() override {
-      if (!_node) {
-        _node = _parent->getNode();
-      }
-      // Color to render this time around
-      ImU32 color;
-      // Set an invisible button to detect hover state
-      ImGui::SetCursorScreenPos(_min);
-      ImGui::InvisibleButton(_label.c_str(), _bbsize);
+    // Establish a connection with another NodeAnchor. When an
+    // Imgui DragDropTarget payload is processed in begin,
+    // the payload should be dropped into this anchor's
+    // connections and then this node should create a NodeDragPayload
+    // for itself and use establishConnection to provide it to the other
+    // NodeAnchor.
+    //
+    // If a connection already exists, the connections should be removed
+    // instead. removeConnection will handle that.
+    void establishConnection(std::shared_ptr<NodeDragPayload> connection);
 
-      if (ImGui::IsItemHovered()) {
-        color = _hoverColor;
-        _hovered = true;
-      } else {
-        color = _color;
-        _hovered = false;
-      }
-      
-      ImDrawList *drawList = ImGui::GetWindowDrawList();
-      drawList->AddCircleFilled(_center, _radius, color);
-    }
+    // Remove a connection betrween two anchors
+    void removeConnection(std::shared_ptr<NodeDragPayload> connection);
 
-    void end() override {
-    }
+    // Draw connections between nodes
+    void drawConnections();
+    
+    void begin() override;
+
+    void end() override;
 
     // (Re)set center coordinate
-    void setCenter(ImVec2 center) {
-      _center = center;
-      _min.x = center.x - _radius;
-      _min.y = center.y - _radius;
-      _bbsize.x = _radius * 2;
-      _bbsize.y = _radius * 2;
-    }
+    void setCenter(ImVec2 center);
     
   };
   

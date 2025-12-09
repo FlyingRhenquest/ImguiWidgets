@@ -16,6 +16,84 @@
 
 #include <fr/Imgui/NodeWindow.h>
 
-bool fr::Imgui::NodeWindow::_defaultEditability = false;
-bool fr::Imgui::NodeWindow::_defaultDisplayEditabilityCheckbox = true;
+namespace fr::Imgui {
 
+  bool NodeWindow::_defaultEditable = false;
+  bool NodeWindow::_defaultDisplayEditabilityCheckbox = true;
+
+  NodeWindow::NodeWindow(const std::string& label) :
+    Parent(label),
+    _editable(_defaultEditable),
+    _displayEditable(_defaultDisplayEditabilityCheckbox),
+    _initted(false) {
+    memset(_idText, '\0', idTextLen);
+    ImU32 white = IM_COL32(255,255,255,255);
+    ImU32 red = IM_COL32(255,0,0,255);
+    _upAnchor = std::make_shared<NodeAnchor>("##UpAnchor", ImVec2(0,0), 5.0, white, red, AnchorType::Up);
+    _downAnchor = std::make_shared<NodeAnchor>("##DownAnchor", ImVec2(0,0), 5.0, white, red, AnchorType::Down);
+    _enableEditingLabel = getUniqueLabel("Enable Editing");
+    _nodeIdLabel = getUniqueLabel("ID: ");
+  }
+
+  void NodeWindow::addNode(fr::RequirementsManager::Node::PtrType node) {
+    _node = node;
+  }
+
+  fr::RequirementsManager::Node::PtrType NodeWindow::getNode() {
+    return _node;
+  }
+
+  void NodeWindow::init() {
+    if (!_node) {
+      _node = std::make_shared<fr::RequirementsManager::Node>();
+    }
+    if (!_node->initted) {
+      _node->init();
+    }
+    this->addWidget(_upAnchor->getLabel(), _upAnchor);
+    this->addWidget(_downAnchor->getLabel(), _downAnchor);
+    
+    // Set up a lambda so the anchor point render better as the
+    // window is being moved.
+    auto sub = this->moved.connect([&](Window::PtrType parent,
+                                       const ImVec2& pos) {
+      _min = pos;
+      ImVec2 upListCenter(_currentSize.x / 2.0, 25.0);
+      _upAnchor->setCenter(screenCoordinate(upListCenter));
+      ImVec2 downListCenter(_currentSize.x / 2.0, _currentSize.y);
+      _downAnchor->setCenter(screenCoordinate(downListCenter));
+    });
+    
+    _subscriptions.push_back(sub);
+    
+    _initted = true;
+  }
+
+  std::string NodeWindow::idString() {
+    std::string ret;
+    if (_node) {
+      ret = _node->idString();
+    }
+    return ret;
+  }
+
+  void NodeWindow::begin() {
+    if (!_node || !_initted) {
+      init();
+    }
+    setIdText();
+    
+    Parent::begin();
+    
+    if (_displayEditable) {
+      ImGui::Checkbox(_enableEditingLabel.c_str(), &_editable);
+    }
+    // Node ID text is always readonly
+    std::string id = getUniqueLabel("ID: ");
+    ImGui::InputText(_nodeIdLabel.c_str(), _idText, idTextLen, ImGuiInputTextFlags_ReadOnly);
+  }
+
+  void NodeWindow::end() {
+    Parent::end();      
+  }
+}

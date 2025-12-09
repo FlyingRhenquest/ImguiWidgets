@@ -25,6 +25,8 @@
 
 namespace fr::Imgui {
 
+  class NodeAnchor;
+  
   /**
    * A window that renders a RequirementsManager Node.
    * You can put your own node in. If you render the window
@@ -45,7 +47,7 @@ namespace fr::Imgui {
     // Held node
     fr::RequirementsManager::Node::PtrType _node;
     // Default editability starting state
-    static bool _defaultEditability;
+    static bool _defaultEditable;
     // default starting state to display the editable checkbox
     static bool _defaultDisplayEditabilityCheckbox;
         
@@ -79,95 +81,34 @@ namespace fr::Imgui {
     // You can set the default editability of a node to
     // whatever you want.
     static void setDefaultEditability(bool ed) {
-      _defaultEditability = ed;
+      _defaultEditable = ed;
     }
 
     static void setDefaultDisplayEditabiltiy(bool ed) {
       _defaultDisplayEditabilityCheckbox = ed;
     }
     
-    NodeWindow(const std::string& label = "Node") : Parent(label),
-                                                    _editable(_defaultEditability),
-                                                    _displayEditable(_defaultDisplayEditabilityCheckbox),
-                                                    _initted(false) {
-      memset(_idText, '\0', idTextLen);
-      ImU32 white = IM_COL32(255,255,255,255);
-      ImU32 red = IM_COL32(255,0,0,255);
-      _upAnchor = std::make_shared<NodeAnchor>("##UpAnchor", ImVec2(0,0), 5.0, white, red, AnchorType::Up);
-      _downAnchor = std::make_shared<NodeAnchor>("##DownAnchor", ImVec2(0,0), 5.0, white, red, AnchorType::Down);
-      _enableEditingLabel = getUniqueLabel("Enable Editing");
-      _nodeIdLabel = getUniqueLabel("ID: ");
-    }
+    NodeWindow(const std::string& label = "Node");
 
     virtual ~NodeWindow() {}
     
     // Add a node for this window to hold.
     // Making this virtual but it shouldn't ever
     // have to be specialized.
-    virtual void addNode(fr::RequirementsManager::Node::PtrType node) {
-      _node = node;
-    }
+    virtual void addNode(fr::RequirementsManager::Node::PtrType node);
     // Returns the held node. This can be a nullptr.
-    virtual fr::RequirementsManager::Node::PtrType getNode() {
-      return _node;
-    }
+    virtual fr::RequirementsManager::Node::PtrType getNode();
 
     // Init populates the Node if it's empty and calls
     // init on it.
-    void init() {
-      if (!_node) {
-        _node = std::make_shared<fr::RequirementsManager::Node>();
-      }
-      if (!_node->initted) {
-        _node->init();
-      }
-      this->addWidget(_upAnchor->getLabel(), _upAnchor);
-      this->addWidget(_downAnchor->getLabel(), _downAnchor);
-
-      // Set up a lambda so the anchor point render better as the
-      // window is being moved.
-      auto sub = this->moved.connect([&](Window::PtrType parent,
-                                         const ImVec2& pos) {
-        _min = pos;
-        ImVec2 upListCenter(_currentSize.x / 2.0, 25.0);
-        _upAnchor->setCenter(screenCoordinate(upListCenter));
-        ImVec2 downListCenter(_currentSize.x / 2.0, _currentSize.y);
-        _downAnchor->setCenter(screenCoordinate(downListCenter));
-      });
-
-      _subscriptions.push_back(sub);
-
-      _initted = true;
-    }
+    void init();
 
     // Returns stored node id
-    std::string idString() {
-      std::string ret;
-      if (_node) {
-        ret = _node->idString();
-      }
-      return ret;
-    }
+    std::string idString();
 
-    void begin() override {
-      if (!_node || !_initted) {
-        init();
-      }
-      setIdText();
+    void begin() override;
 
-      Parent::begin();
-      
-      if (_displayEditable) {
-        ImGui::Checkbox(_enableEditingLabel.c_str(), &_editable);
-      }
-      // Node ID text is always readonly
-      std::string id = getUniqueLabel("ID: ");
-      ImGui::InputText(_nodeIdLabel.c_str(), _idText, idTextLen, ImGuiInputTextFlags_ReadOnly);
-    }
-
-    void end() override {
-      Parent::end();      
-    }
+    void end() override;
   };
 
 }

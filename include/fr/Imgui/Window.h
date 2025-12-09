@@ -21,7 +21,7 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <format>
-#include <fr/Imgui/Widget.h>
+#include <fr/Imgui/WidgetApi.h>
 #include <imgui.h>
 #include <string>
 #include <memory>
@@ -51,7 +51,7 @@ namespace fr::Imgui {
     // A map of child windows to display
     std::unordered_map<std::string, Window::PtrType> _children;
     // A map of widgets to display
-    std::unordered_map<std::string, Widget::PtrType> _widgets;
+    std::unordered_map<std::string, std::shared_ptr<WidgetApi>> _widgets;
     // parent window if one exists
     Window::PtrType _parent;
     // Subscriptions to events
@@ -115,7 +115,7 @@ namespace fr::Imgui {
 
     // Add a widget. Key can be used to retrieve the widget
     // later.
-    virtual void addWidget(const std::string& key, std::shared_ptr<Widget> w) {
+    virtual void addWidget(const std::string& key, std::shared_ptr<WidgetApi> w) {
       if (!_widgets.contains(key)) {
         _widgets[key] = w;
         w->setParent(shared_from_this());
