@@ -32,7 +32,7 @@ namespace fr::Imgui {
     _upAnchor = std::make_shared<NodeAnchor>("##UpAnchor", ImVec2(0,0), 5.0, white, red, AnchorType::Up);
     _downAnchor = std::make_shared<NodeAnchor>("##DownAnchor", ImVec2(0,0), 5.0, white, red, AnchorType::Down);
     _enableEditingLabel = getUniqueLabel("Enable Editing");
-    _nodeIdLabel = getUniqueLabel("ID: ");
+    _nodeIdLabel = getUniqueLabel("##ID:");
   }
 
   void NodeWindow::addNode(fr::RequirementsManager::Node::PtrType node) {
@@ -58,8 +58,14 @@ namespace fr::Imgui {
     auto sub = this->moved.connect([&](Window::PtrType parent,
                                        const ImVec2& pos) {
       _min = pos;
+      // This always places the upListcenter anchor
+      // 25 pixels below the titlebar
       ImVec2 upListCenter(_currentSize.x / 2.0, 25.0);
       _upAnchor->setCenter(screenCoordinate(upListCenter));
+      // There seems to be some slop on the bottom, so
+      // _currentSize is more than adequate as an offset from
+      // there (I should check and see if I can make it a positive
+      // number and exceed the bound down into the slop.
       ImVec2 downListCenter(_currentSize.x / 2.0, _currentSize.y);
       _downAnchor->setCenter(screenCoordinate(downListCenter));
     });
@@ -77,19 +83,22 @@ namespace fr::Imgui {
     return ret;
   }
 
-  void NodeWindow::begin() {
+  void NodeWindow::beginning() {
     if (!_node || !_initted) {
       init();
     }
-    setIdText();
-    
+    if (!strlen(_idText)) {
+      setIdText();
+    }
+    Parent::beginning();
+  }
+  
+  void NodeWindow::begin() {
     Parent::begin();
     
     if (_displayEditable) {
       ImGui::Checkbox(_enableEditingLabel.c_str(), &_editable);
     }
-    // Node ID text is always readonly
-    std::string id = getUniqueLabel("ID: ");
     ImGui::InputText(_nodeIdLabel.c_str(), _idText, idTextLen, ImGuiInputTextFlags_ReadOnly);
   }
 

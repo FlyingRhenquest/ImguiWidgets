@@ -1,0 +1,68 @@
+/**
+ * Copyright 2025 Bruce Ide
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
+
+#pragma once
+
+#include <fr/Imgui/NodeWindow.h>
+
+namespace fr::Imgui {
+
+  /**
+   * CommittableNodeWindow provideds left/right anchors for committable
+   * nodes in addition to the up/down ones.
+   */
+
+  class CommitableNodeWindow : public NodeWindow {
+  public:
+    using Type = CommitableNodeWindow;
+    using PtrType = std::shared_ptr<Type>;
+    using Parent = NodeWindow;
+
+    std::shared_ptr<NodeAnchor> _leftAnchor;
+    std::shared_ptr<NodeAnchor> _rightAnchor;
+
+    CommitableNodeWindow(const std::string& label = "CommitableNode") :
+      Parent(label) {
+      ImU32 white = IM_COL32(255,255,255,255);
+      ImU32 red = IM_COL32(255,0,0,255);
+      _leftAnchor = std::make_shared<NodeAnchor>("##LeftAnchor", ImVec2(0,0), 5.0, white, red, AnchorType::Left);
+      _rightAnchor = std::make_shared<NodeAnchor>("##RightAnchor", ImVec2(0,0), 5.0, white, red, AnchorType::Right);
+    }
+
+    virtual ~CommitableNodeWindow() {}
+
+    void init() override {
+      if (!_node) {
+        _node = std::make_shared<fr::RequirementsManager::CommitableNode>();
+      }
+
+      this->addWidget(_leftAnchor->getLabel(), _leftAnchor);
+      this->addWidget(_rightAnchor->getLabel(), _rightAnchor);
+
+      auto sub = this->moved.connect([&](Window::PtrType parent,
+                                         const ImVec2& pos) {
+        _min = pos;
+        ImVec2 leftListCenter(10.0, _currentSize.y / 2.0);
+        _leftAnchor->setCenter(screenCoordinate(leftListCenter));
+        ImVec2 rightListCenter(_currentSize.x, _currentSize.y / 2.0);
+        _rightAnchor->setCenter(screenCoordinate(rightListCenter));
+      });
+      Parent::init();
+    }
+    
+  };
+  
+}

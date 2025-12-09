@@ -10,6 +10,7 @@
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_opengl3.h"
+#include <fr/Imgui/CommitableNodeWindow.h>
 #include <fr/Imgui/GridWindow.h>
 #include <fr/Imgui/NodeWindow.h>
 #include <stdio.h>
@@ -135,14 +136,19 @@ int main(int, char**)
 
     auto node = std::make_shared<fr::Imgui::NodeWindow>();
     node->init();
+    node->setStartingSize(300, 200);
     FRDemoWindow->add(node->idString(), node);
-    node->setStartingSize(100,100);
 
     auto secondNode = std::make_shared<fr::Imgui::NodeWindow>();
     secondNode->init();
+    secondNode->setStartingSize(300, 200);
     FRDemoWindow->add(secondNode->idString(), secondNode);
-    secondNode->setStartingSize(100,50);
-    
+
+    auto commitableNode = std::make_shared<fr::Imgui::CommitableNodeWindow>();
+    commitableNode->init();
+    commitableNode->setStartingSize(300, 200);
+    FRDemoWindow->add(commitableNode->idString(), commitableNode);
+
     // Main loop
     bool done = false;
 #ifdef __EMSCRIPTEN__

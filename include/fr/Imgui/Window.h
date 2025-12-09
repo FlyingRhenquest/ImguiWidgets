@@ -54,6 +54,9 @@ namespace fr::Imgui {
     std::unordered_map<std::string, std::shared_ptr<WidgetApi>> _widgets;
     // parent window if one exists
     Window::PtrType _parent;
+    // Window's begin has been called the first time
+    // This is use to set up initialization stuff for imgui
+    bool _started;
     // Subscriptions to events
     std::vector<boost::signals2::connection> _subscriptions;
 
@@ -86,7 +89,8 @@ namespace fr::Imgui {
                                        _lastMin(0,0),
                                        _min(0,0),
                                        _startingSize(0,0),
-                                       _backgroundColor(0.0,0.0,0.0,1.0) {
+                                       _backgroundColor(0.0,0.0,0.0,1.0),
+                                       _started(false) {
     }
 
     virtual ~Window() {
@@ -180,10 +184,17 @@ namespace fr::Imgui {
         widget->end();
       }
     }
+
+    virtual void beginning() {
+      _started = true;
+      ImGui::SetNextWindowSize(_startingSize);
+    }
     
     virtual void begin() {
+      if (!_started) {
+        beginning();
+      }
       ImGui::PushStyleColor(ImGuiCol_WindowBg, _backgroundColor);
-      ImGui::SetNextWindowSize(_startingSize, ImGuiCond_FirstUseEver);
       ImGui::Begin(_label.c_str());
       _min = ImGui::GetWindowPos();
       if ((_min.x != _lastMin.x) || (_min.y != _lastMin.y)) {

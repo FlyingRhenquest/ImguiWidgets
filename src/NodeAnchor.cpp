@@ -35,6 +35,15 @@ namespace fr::Imgui {
     // node ID is already in the connections (This keeps us from getting
     // into an infinite loop of establishing connections)
     std::cout << "Examining " << connection->sourceNode->idString() << std::endl;
+    // Reject connection if the far node is the wrong type
+    if ((_type == AnchorType::Up && connection->anchorType != AnchorType::Down) ||
+        (_type == AnchorType::Down && connection->anchorType != AnchorType::Up) ||
+        (_type == AnchorType::Left && connection->anchorType != AnchorType::Right) ||
+        (_type == AnchorType::Right && connection->anchorType != AnchorType::Left)) {
+      std::cout << "Reject connection: wrong anchor type" << std::endl;
+    return;
+    }
+      
     if (!_connections.contains(connection->sourceNode->idString())) {
       auto otherSide = std::make_shared<NodeDragPayload>();
       _connections[connection->sourceNode->idString()] = connection;

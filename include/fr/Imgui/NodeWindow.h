@@ -101,11 +101,12 @@ namespace fr::Imgui {
 
     // Init populates the Node if it's empty and calls
     // init on it.
-    void init();
+    virtual void init();
 
     // Returns stored node id
     std::string idString();
 
+    void beginning() override;
     void begin() override;
 
     void end() override;
