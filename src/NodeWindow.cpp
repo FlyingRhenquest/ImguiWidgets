@@ -1,17 +1,17 @@
 /**
  * Copyright 2025 Bruce Ide
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #include <fr/Imgui/NodeWindow.h>
@@ -25,6 +25,7 @@ namespace fr::Imgui {
     Parent(label),
     _editable(_defaultEditable),
     _displayEditable(_defaultDisplayEditabilityCheckbox),
+    _displayDebugButton(false),
     _initted(false) {
     memset(_idText, '\0', idTextLen);
     ImU32 white = IM_COL32(255,255,255,255);
@@ -33,6 +34,7 @@ namespace fr::Imgui {
     _downAnchor = std::make_shared<NodeAnchor>("##DownAnchor", ImVec2(0,0), 5.0, white, red, AnchorType::Down);
     _enableEditingLabel = getUniqueLabel("Enable Editing");
     _nodeIdLabel = getUniqueLabel("##ID:");
+    _debugButtonLabel = getUniqueLabel("DEBUG!");
   }
 
   void NodeWindow::addNode(fr::RequirementsManager::Node::PtrType node) {
@@ -41,6 +43,10 @@ namespace fr::Imgui {
 
   fr::RequirementsManager::Node::PtrType NodeWindow::getNode() {
     return _node;
+  }
+
+  void NodeWindow::setDisplayDebugButton(bool d) {
+    _displayDebugButton = d;
   }
 
   void NodeWindow::init() {
@@ -95,10 +101,18 @@ namespace fr::Imgui {
   
   void NodeWindow::begin() {
     Parent::begin();
+
+    if (_displayDebugButton) {
+      if (ImGui::Button(_debugButtonLabel.c_str())) {
+        std::cout << std::endl << _node->to_json() << std::endl;
+      }
+    }
     
     if (_displayEditable) {
       ImGui::Checkbox(_enableEditingLabel.c_str(), &_editable);
     }
+    ImGui::Text("Node ID: ");
+    ImGui::SameLine();
     ImGui::InputText(_nodeIdLabel.c_str(), _idText, idTextLen, ImGuiInputTextFlags_ReadOnly);
   }
 

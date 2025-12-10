@@ -1,17 +1,17 @@
 /**
  * Copyright 2025 Bruce Ide
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
 #pragma once
@@ -60,6 +60,8 @@ namespace fr::Imgui {
     
     // Display the editable checkbox
     bool _displayEditable;
+    // Debug button prints _node.to_json() to console
+    bool _displayDebugButton;
 
     // Node-specific buffers
     char _idText[idTextLen];
@@ -71,9 +73,10 @@ namespace fr::Imgui {
     // Window and Widget Labels
     std::string _enableEditingLabel;
     std::string _nodeIdLabel;
+    std::string _debugButtonLabel;
     
     void setIdText() {
-      std::string text = std::format("ID: {}", _node->idString());
+      std::string text = std::format("{}", _node->idString());
       strncpy(_idText, text.c_str(), idTextLen);
     }
 
@@ -98,7 +101,9 @@ namespace fr::Imgui {
     virtual void addNode(fr::RequirementsManager::Node::PtrType node);
     // Returns the held node. This can be a nullptr.
     virtual fr::RequirementsManager::Node::PtrType getNode();
-
+    // Enable/Disable debug button
+    void setDisplayDebugButton(bool d);
+    
     // Init populates the Node if it's empty and calls
     // init on it.
     virtual void init();

@@ -11,6 +11,7 @@
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_opengl3.h"
 #include <fr/Imgui/CommitableNodeWindow.h>
+#include <fr/Imgui/GraphNodeWindow.h>
 #include <fr/Imgui/GridWindow.h>
 #include <fr/Imgui/NodeWindow.h>
 #include <stdio.h>
@@ -144,10 +145,11 @@ int main(int, char**)
     secondNode->setStartingSize(300, 200);
     FRDemoWindow->add(secondNode->idString(), secondNode);
 
-    auto commitableNode = std::make_shared<fr::Imgui::CommitableNodeWindow>();
-    commitableNode->init();
-    commitableNode->setStartingSize(300, 200);
-    FRDemoWindow->add(commitableNode->idString(), commitableNode);
+    auto graphWindow = std::make_shared<fr::Imgui::GraphNodeWindow>();
+    graphWindow->init();
+    graphWindow->setStartingSize(300, 200);
+    graphWindow->setDisplayDebugButton(true);
+    FRDemoWindow->add(graphWindow->idString(), graphWindow);
 
     // Main loop
     bool done = false;
