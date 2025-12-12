@@ -97,7 +97,9 @@ namespace fr::Imgui {
     
     // Add a node for this window to hold.
     // Making this virtual but it shouldn't ever
-    // have to be specialized.
+    // have to be specialized. Call this before init
+    // gets called or the window will create a new
+    // node instead.
     virtual void addNode(fr::RequirementsManager::Node::PtrType node);
     // Returns the held node. This can be a nullptr.
     virtual fr::RequirementsManager::Node::PtrType getNode();

@@ -54,6 +54,13 @@ namespace fr::Imgui {
         _node->addUp(connection->sourceNode);
       } else if (_type == AnchorType::Down) {
         _node->addDown(connection->sourceNode);
+      } else if (_type == AnchorType::Right) {
+        // These will only be committable nodes
+        auto node = dynamic_pointer_cast<fr::RequirementsManager::CommitableNode>(_node);
+        auto sourceNode = dynamic_pointer_cast<fr::RequirementsManager::CommitableNode>(connection->sourceNode);
+        if (node && sourceNode) {
+          node->addChangeChild(sourceNode);
+        }
       }
       connection->dragSource->establishConnection(otherSide);
     }

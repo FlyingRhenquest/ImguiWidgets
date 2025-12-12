@@ -10,10 +10,7 @@
 #include "imgui.h"
 #include "imgui_impl_sdl3.h"
 #include "imgui_impl_opengl3.h"
-#include <fr/Imgui/CommitableNodeWindow.h>
-#include <fr/Imgui/GraphNodeWindow.h>
-#include <fr/Imgui/GridWindow.h>
-#include <fr/Imgui/NodeWindow.h>
+#include <fr/ImguiWidgets.h>
 #include <stdio.h>
 #include <SDL3/SDL.h>
 #if defined(IMGUI_IMPL_OPENGL_ES2)
@@ -130,29 +127,17 @@ int main(int, char**)
     //IM_ASSERT(font != nullptr);
 
     // Our state
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    auto FRDemoWindow = std::make_shared<fr::Imgui::GridWindow>("Demo Window");
-    FRDemoWindow->setStartingSize(640,480);
-
-    auto node = std::make_shared<fr::Imgui::NodeWindow>();
-    node->init();
-    node->setStartingSize(300, 200);
-    FRDemoWindow->add(node->idString(), node);
-
-    auto secondNode = std::make_shared<fr::Imgui::NodeWindow>();
-    secondNode->init();
-    secondNode->setStartingSize(300, 200);
-    FRDemoWindow->add(secondNode->idString(), secondNode);
-
-    auto graphWindow = std::make_shared<fr::Imgui::GraphNodeWindow>();
-    graphWindow->init();
-    graphWindow->setStartingSize(300, 200);
-    graphWindow->setDisplayDebugButton(true);
-    FRDemoWindow->add(graphWindow->idString(), graphWindow);
+    auto FRDemoWindow = std::make_shared<fr::Imgui::NodeEditorWindow>();
+    FRDemoWindow->setStartingSize(300,50);
 
     // Main loop
     bool done = false;
+
+    // Subscribe to exit event so we can set done to true
+    // when user goes file->exit
+    FRDemoWindow->exitEvent.connect([&done](){ done = true; });
+    
 #ifdef __EMSCRIPTEN__
     // For an Emscripten build we are disabling file-system access, so let's not attempt to do a fopen() of the imgui.ini file.
     // You may manually call LoadIniSettingsFromMemory() to load settings from your own storage.
@@ -185,6 +170,8 @@ int main(int, char**)
             continue;
         }
 
+        auto clear_color = FRDemoWindow->getBackgroundColor();
+        
         // Start the Dear ImGui frame
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplSDL3_NewFrame();

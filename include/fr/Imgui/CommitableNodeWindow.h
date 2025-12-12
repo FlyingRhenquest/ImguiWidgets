@@ -49,16 +49,36 @@ namespace fr::Imgui {
         _node = std::make_shared<fr::RequirementsManager::CommitableNode>();
       }
 
+      auto node = dynamic_pointer_cast<fr::RequirementsManager::CommitableNode>(_node);
+      if (node) {
+        if (node->isCommitted()) {
+          _displayEditable = false;
+          _editable = false;          
+        }
+        if (!node->isCommitted()) {
+          if (ImGui::Button("Commit")) {
+            node->commit();
+          }
+          if (ImGui::IsItemHovered()) {
+            ImGui::BeginTooltip();
+            ImGui::Text("Committing the node causes it to become permanently un-editable. Once committed, you must create a new product node with whatever changes you want and set it as a change node with the right-hand node anchor. You can still add subnodes to a committed node.");
+          }
+        }        
+      }
+
       this->addWidget(_leftAnchor->getLabel(), _leftAnchor);
       this->addWidget(_rightAnchor->getLabel(), _rightAnchor);
 
       auto sub = this->moved.connect([&](Window::PtrType parent,
                                          const ImVec2& pos) {
         _min = pos;
-        ImVec2 leftListCenter(10.0, _currentSize.y / 2.0);
-        _leftAnchor->setCenter(screenCoordinate(leftListCenter));
-        ImVec2 rightListCenter(_currentSize.x, _currentSize.y / 2.0);
-        _rightAnchor->setCenter(screenCoordinate(rightListCenter));
+
+        // Put the left/right anchor nodes at the top of the window
+        // and see how that looks
+        ImVec2 leftAnchor(10.0, 25.0);
+        _leftAnchor->setCenter(screenCoordinate(leftAnchor));
+        ImVec2 rightAnchor(_currentSize.x, 25.0);
+        _rightAnchor->setCenter(screenCoordinate(rightAnchor));
       });
       Parent::init();
     }

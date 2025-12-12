@@ -16,9 +16,16 @@ Currently this is just a checkpoint commit into git.
 
 ## Whats here RIGHT NOW
 
- * A basic window/widget setup with some base classes
- * Node windows for a couple of different node types.
- * An imgui opengl demo.
+ * Some widgets to support editing RequirementsManager Nodes
+ * NodeEditorWindow that can create the current Node Windows
+   that I've implemented.
+
+Currently there isn't a way to load or save graphs in the database
+or to/from json, but that's coming soon. The Graph window does currently
+display a "DEBUG!" button that will emit JSON to the console, but
+I'll be cleaning up console prints when I'm done debugging all this,
+so I wouldn't rely on the functionality. There'll be better
+ways to load and save data soon.
 
 Vulkan is nominally supported in the Makefile as I wasn't sure
 if OpenGL or Vulkan was the way I wanted to go with this, but it
@@ -47,11 +54,9 @@ These can be dragged to another anchor to link the two windows.
 If a link already exists, dragging the one anchor to the opposite
 end again will unlink the two nodes.
 
-CommitableNodeWindows also have anchors to the left and right.
-Currently placement is at the vertical center of the window, but this
-interferes with the text widget display. When I get around to addressing
-that I'll need to decide if I want to just relocate them to the top
-or if I should add some ImGui layout code.
+CommitableNodeWindows also have anchors to the left and right. I
+put these controls at the top of the window so they won't interfere
+with the other items in the window.
 
 Node windows have individual "Enable Editing" checkboxes which must
 be checked if you want to edit the data in that node. NodeWindow
@@ -60,10 +65,6 @@ to allow editing of any editable fields. I'm leaning toward displaying
 the control and having it default to off just because I frequently
 find myself accidentally putting text in random windows.
 
-At the moment there isn't really a way to save data, but at the
-moment there are only a few node windows hard coded into the
-main.cpp demo anyway.
-
 Once I do have data saving, the factories I build for it will
 look for GraphNodes specifically. So if you want to be able to
 find your graphs, you should always have a graph node connected
@@ -71,11 +72,7 @@ to the graph somewhere.
 
 ## Todos
 
- * Implement edit windows for all the different node types in
-   RequirementsManager
- * Derive an editor window from GridWindow that allows creation
-   of new nodes as well as loading and saving from the database,
-   REST or JSON text files.
+ * Implement windows for the rest of the nodes in RequirementsManager
  * Implement other views of graphs as there are several useful
    domains that will be represented in node data.
  * Python API

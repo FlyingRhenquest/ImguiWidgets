@@ -52,22 +52,27 @@ namespace fr::Imgui {
       _gridLineColor = IM_COL32(r,g,b,a);
     }
 
-    void begin() override {
-      Window::begin();
+    virtual void drawGrid() {
       ImDrawList *drawList = ImGui::GetWindowDrawList();
 
-      for (float y = 0; y < _currentSize.y; y += _squareSize) {
+      for (float y = 0.0; y < _currentSize.y; y += _squareSize) {
         drawList->AddLine(screenCoordinate(0, y), screenCoordinate(_currentSize.x, y), _gridLineColor);
       }
-
-      for (float x = 0; x < _currentSize.x; x+= _squareSize) {
+      
+      for (float x = 0.0; x < _currentSize.x; x+= _squareSize) {
         drawList->AddLine(screenCoordinate(x, 0), screenCoordinate(x, _currentSize.y), _gridLineColor);
       }
+      
+      drawList->AddLine(screenCoordinate(0.0,0.0), screenCoordinate(0.0, _currentSize.y), _gridLineColor);
+      drawList->AddLine(screenCoordinate(0.0,0.0), screenCoordinate(_currentSize.x, 0.0), _gridLineColor);
+      drawList->AddLine(screenCoordinate(_currentSize.x, 0.0), screenCoordinate(_currentSize.x, _currentSize.y), _gridLineColor);
+      drawList->AddLine(screenCoordinate(0.0, _currentSize.y), screenCoordinate(_currentSize.x, _currentSize.y), _gridLineColor);
+    }
 
-      drawList->AddLine(screenCoordinate(0,0), screenCoordinate(0, _currentSize.y), _gridLineColor);
-      drawList->AddLine(screenCoordinate(0,0), screenCoordinate(_currentSize.x, 0), _gridLineColor);
-      drawList->AddLine(screenCoordinate(_currentSize.x, 0), screenCoordinate(_currentSize.x, _currentSize.y), _gridLineColor);
-      drawList->AddLine(screenCoordinate(0, _currentSize.y), screenCoordinate(_currentSize.x, _currentSize.y), _gridLineColor);
+    void begin() override {
+      Window::begin();
+
+      drawGrid();
         
     }
 

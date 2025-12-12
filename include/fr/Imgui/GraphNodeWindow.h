@@ -43,15 +43,15 @@ namespace fr::Imgui {
       : Parent(title) {
       memset(_titleText, '\0', titleTextLen);
       _titleTextLabel = getUniqueLabel("##Title");
-      setTitleText();
     }
 
-    virtual ~GraphNodeWindow() {};
+    virtual ~GraphNodeWindow() {}
 
     void init() override {
       if (!_node) {
         _node = std::make_shared<fr::RequirementsManager::GraphNode>();
       }
+      setTitleText();
       Parent::init();
     }
 

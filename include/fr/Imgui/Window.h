@@ -167,6 +167,10 @@ namespace fr::Imgui {
       _startingSize.y = height;
     }
 
+    ImVec4 getBackgroundColor() const {
+      return _backgroundColor;
+    }
+    
     void setBackgroundColor(float r, float g, float b, float alpha) {
       _backgroundColor.x = r;
       _backgroundColor.y = g;
@@ -185,9 +189,18 @@ namespace fr::Imgui {
       }
     }
 
+    // Override to run something the very first time begin runs.
+    // You should generally always call the parent beginning
+    // method at the beginning or end of your overrideen beginning
+    // method if you do this.
     virtual void beginning() {
       _started = true;
       ImGui::SetNextWindowSize(_startingSize);
+    }
+
+    // Override if you want to modify the ImGui::Begin window flags
+    virtual void Begin() {
+      ImGui::Begin(_label.c_str());
     }
     
     virtual void begin() {
@@ -195,7 +208,7 @@ namespace fr::Imgui {
         beginning();
       }
       ImGui::PushStyleColor(ImGuiCol_WindowBg, _backgroundColor);
-      ImGui::Begin(_label.c_str());
+      Begin();
       _min = ImGui::GetWindowPos();
       if ((_min.x != _lastMin.x) || (_min.y != _lastMin.y)) {
         moved(shared_from_this(), _min);

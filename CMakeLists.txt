@@ -25,6 +25,7 @@ set(LINK_LIBRARIES "")
 set(LIBRARY_SOURCE
   "${CMAKE_CURRENT_SOURCE_DIR}/src/NodeWindow.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/NodeAnchor.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/NodeEditorWindow.cpp"
 )
 
 if (USE_REQUIREMENTS_MANAGER)
@@ -40,6 +41,7 @@ set(VENDOR_SRC
   "${VENDOR_SOURCE_DIR}/imgui_widgets.cpp"
   "${VENDOR_SOURCE_DIR}/imgui_tables.cpp"
   "${VENDOR_SOURCE_DIR}/imgui_demo.cpp"
+  "${VENDOR_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp"
 )
 
 set(VENDOR_HEADERS
@@ -57,6 +59,7 @@ set(INCLUDE_DIRS
   "${VENDOR_SOURCE_DIR}"
   "${VENDOR_SOURCE_DIR}/backends"
   "${VENDOR_SOURCE_DIR}/include"
+  "${VENDOR_SOURCE_DIR}/misc/cpp"
 )
 
 message(STATUS "Checking for SDL3")
