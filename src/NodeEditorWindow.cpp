@@ -87,6 +87,20 @@ namespace fr::Imgui {
             req->setStartingSize(300, 300);
             add(req->idString(), req);
           }
+
+          if (ImGui::MenuItem("Story")) {
+            auto story = std::make_shared<fr::Imgui::StoryWindow>();
+            story->init();
+            story->setStartingSize(300,500);
+            add(story->idString(), story);
+          }
+
+          if (ImGui::MenuItem("UseCase")) {
+            auto usecase = std::make_shared<fr::Imgui::UseCaseWindow>();
+            usecase->init();
+            usecase->setStartingSize(300, 200);
+            add(usecase->idString(), usecase);
+          }
           
           ImGui::EndMenu();
         }

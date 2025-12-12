@@ -26,6 +26,8 @@
 #include <fr/Imgui/ProductWindow.h>
 #include <fr/Imgui/ProjectWindow.h>
 #include <fr/Imgui/RequirementWindow.h>
+#include <fr/Imgui/StoryWindow.h>
+#include <fr/Imgui/UseCaseWindow.h>
 #include <fr/Imgui/Widget.h>
 #include <fr/Imgui/WidgetApi.h>
 #include <fr/Imgui/Window.h>

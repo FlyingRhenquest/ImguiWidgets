@@ -16,49 +16,47 @@
 
 #pragma once
 
-#include <fr/RequirementsManager/Requirement.h>
-#include <fr/Imgui/CommitableNodeWindow.h>
+#include <fr/RequirementsManager/Story.h>
+#include <fr/ImguiWidgets.h>
 #include <imgui_stdlib.h>
 
 namespace fr::Imgui {
 
-  class RequirementWindow : public CommitableNodeWindow {
+  class StoryWindow : public CommitableNodeWindow {
     static const size_t titleLen = 200;
     char _titleText[titleLen];
     std::string _titleLabel;
-    std::string _textLabel;
-    std::string _text;
-    std::string _functionalLabel;
-    bool _functional;
+    std::string _goalLabel;
+    std::string _goal;
+    std::string _benefitLabel;
+    std::string _benefit;
 
     void setTitleText() {
-      auto node = dynamic_pointer_cast<fr::RequirementsManager::Requirement>(_node);
+      auto node = dynamic_pointer_cast<fr::RequirementsManager::Story>(_node);
       if (node) {
         strncpy(_titleText, node->getTitle().c_str(), titleLen);
       }
     }
 
   public:
-
-    using Type = RequirementWindow;
-    using PtrType = std::shared_ptr<Type>;
+    using Type = StoryWindow;
+    using PtrType = std::shared_ptr<StoryWindow>;
     using Parent = CommitableNodeWindow;
 
-    RequirementWindow(const std::string &title = "Requirement") : Parent(title) {
-      _functional = false;
+    StoryWindow(const std::string &title = "Story") : Parent(title) {
       memset(_titleText, '\0', titleLen);
       _titleLabel = getUniqueLabel("##Title");
-      _textLabel = getUniqueLabel("##Text");
-      _functionalLabel = getUniqueLabel("##Functional");      
+      _goalLabel = getUniqueLabel("##Goal");
+      _benefitLabel = getUniqueLabel("##Benefit");
     }
 
-    virtual ~RequirementWindow() {}
+    virtual ~StoryWindow() {}
 
     void init() override {
       if (!_node) {
-        _node = std::make_shared<fr::RequirementsManager::Requirement>();
+        _node = std::make_shared<fr::RequirementsManager::Story>();
         _node->init();
-      }      
+      }
       setTitleText();
       Parent::init();
     }
@@ -66,22 +64,12 @@ namespace fr::Imgui {
     void begin() override {
       Parent::begin();
 
-      auto node = dynamic_pointer_cast<fr::RequirementsManager::Requirement>(_node);
+      auto node = dynamic_pointer_cast<fr::RequirementsManager::Story>(_node);
       if (node) {
-        _functional = node->isFunctional();
         auto inputTextFlags = ImGuiInputTextFlags_ReadOnly;
-        // Do not allow any editing if node is committed
         if (_editable && !node->isCommitted()) {
           inputTextFlags = (ImGuiInputTextFlags_) 0;
         }
-        ImGui::Text("Functional: ");
-        ImGui::SameLine();
-        if (ImGui::Checkbox(_functionalLabel.c_str(), &_functional)) {
-          if (_editable && !node->isCommitted()) {
-            node->setFunctional(_functional);
-          }
-        }
-
         ImGui::Text("Title: ");
         ImGui::SameLine();
         if (ImGui::InputText(_titleLabel.c_str(),
@@ -90,19 +78,28 @@ namespace fr::Imgui {
                              inputTextFlags)) {
           node->setTitle(_titleText);
         }
-        ImGui::Text("Requirement Text:");
-        if (ImGui::InputTextMultiline(_textLabel.c_str(),
-                                      &_text,
+        ImGui::Text("Goal:");
+        if (ImGui::InputTextMultiline(_goalLabel.c_str(),
+                                      &_goal,
                                       ImVec2(0,0),
                                       inputTextFlags)) {
-          node->setText(_text);
+          node->setGoal(_goal);
         }
+        ImGui::Text("Benefit:");
+        if (ImGui::InputTextMultiline(_benefitLabel.c_str(),
+                                      &_benefit,
+                                      ImVec2(0,0),
+                                      inputTextFlags)) {
+          node->setBenefit(_benefit);
+        }
+        
       } else {
         ImGui::Text("If you're seeing this text, this node somehow doesn't have a node.");
         ImGui::Text("This should be impossible.");
       }
-    }
     
+    }
+
   };
   
 }

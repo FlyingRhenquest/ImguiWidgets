@@ -17,6 +17,7 @@
 #pragma once
 
 #include <fr/Imgui/NodeWindow.h>
+#include <format>
 
 namespace fr::Imgui {
 
@@ -49,22 +50,6 @@ namespace fr::Imgui {
         _node = std::make_shared<fr::RequirementsManager::CommitableNode>();
       }
 
-      auto node = dynamic_pointer_cast<fr::RequirementsManager::CommitableNode>(_node);
-      if (node) {
-        if (node->isCommitted()) {
-          _displayEditable = false;
-          _editable = false;          
-        }
-        if (!node->isCommitted()) {
-          if (ImGui::Button("Commit")) {
-            node->commit();
-          }
-          if (ImGui::IsItemHovered()) {
-            ImGui::BeginTooltip();
-            ImGui::Text("Committing the node causes it to become permanently un-editable. Once committed, you must create a new product node with whatever changes you want and set it as a change node with the right-hand node anchor. You can still add subnodes to a committed node.");
-          }
-        }        
-      }
 
       this->addWidget(_leftAnchor->getLabel(), _leftAnchor);
       this->addWidget(_rightAnchor->getLabel(), _rightAnchor);
@@ -80,7 +65,31 @@ namespace fr::Imgui {
         ImVec2 rightAnchor(_currentSize.x, 25.0);
         _rightAnchor->setCenter(screenCoordinate(rightAnchor));
       });
+      _subscriptions.push_back(sub);
       Parent::init();
+    }
+
+    void begin() override {
+      Parent::begin();
+      
+      auto node = dynamic_pointer_cast<fr::RequirementsManager::CommitableNode>(_node);
+      if (node) {
+        if (node->isCommitted()) {
+          _displayEditable = false;
+          _editable = false;          
+        }
+        if (!node->isCommitted()) {
+          if (ImGui::Button("Commit")) {
+            node->commit();
+          }
+          if (ImGui::IsItemHovered()) {
+            ImGui::BeginTooltip();
+            std::string tooltipText = std::format("Committing the node causes it to become permanently un-editable.");
+            ImGui::Text(tooltipText.c_str());
+            ImGui::EndTooltip();
+          }
+        }
+      }
     }
     
   };
