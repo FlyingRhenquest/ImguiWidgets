@@ -95,6 +95,13 @@ namespace fr::Imgui {
             add(story->idString(), story);
           }
 
+          if (ImGui::MenuItem("Text")) {
+            auto text = std::make_shared<fr::Imgui::TextWindow>();
+            text->init();
+            text->setStartingSize(300, 400);
+            add(text->idString(), text);
+          }
+
           if (ImGui::MenuItem("UseCase")) {
             auto usecase = std::make_shared<fr::Imgui::UseCaseWindow>();
             usecase->init();
