@@ -19,6 +19,7 @@
 #include <format>
 #include <fr/Imgui/NodeAnchor.h>
 #include <fr/Imgui/Window.h>
+#include <fr/Imgui/Registration.h>
 #include <fr/RequirementsManager/Node.h>
 #include <string>
 #include <memory>
@@ -39,9 +40,12 @@ namespace fr::Imgui {
     using Type = NodeWindow;
     using PtrType = std::shared_ptr<NodeWindow>;
     using Parent = Window;
+    using NodeType = fr::RequirementsManager::Node;
 
     // Max ID text len
-    static const size_t idTextLen = 50;
+    static constexpr size_t idTextLen = 50;
+    // Default window title
+    static constexpr char WindowTitle[] = "Node";
     
   protected:
     // Held node
@@ -91,7 +95,7 @@ namespace fr::Imgui {
       _defaultDisplayEditabilityCheckbox = ed;
     }
     
-    NodeWindow(const std::string& label = "Node");
+    NodeWindow(const std::string& label = WindowTitle);
 
     virtual ~NodeWindow() {}
     
@@ -119,4 +123,24 @@ namespace fr::Imgui {
     void end() override;
   };
 
+  namespace Registration {
+
+    template <>
+    struct Record<NodeWindow> {
+      using Type = NodeWindow;
+      using NodeType = NodeWindow::NodeType;
+
+      static constexpr char name[] = "Node";
+      // This will be put in a "Test Node" top level menu item
+      // when NodeEditorWindow encounters it
+      static constexpr char topMenuName[] = "Test Node";
+
+      static constexpr void init(std::shared_ptr<Type> window) {}
+
+      static constexpr ImVec2 startingSize() { return ImVec2(300, 100); }
+      
+    };
+        
+  }
+  
 }

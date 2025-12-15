@@ -129,8 +129,19 @@ int main(int, char**)
     // Our state
 
     auto FRDemoWindow = std::make_shared<fr::Imgui::NodeEditorWindow>();
-    FRDemoWindow->setStartingSize(300,50);
 
+    using WindowsRegistrationList = fr::types::Typelist<
+      fr::Imgui::GraphNodeWindow,
+      fr::Imgui::TextWindow,
+      fr::Imgui::ProductWindow,
+      fr::Imgui::ProjectWindow,
+      fr::Imgui::RequirementWindow,
+      fr::Imgui::OrganizationWindow,
+      fr::Imgui::StoryWindow,
+      fr::Imgui::UseCaseWindow      
+      >;
+    FRDemoWindow->buildMenus<WindowsRegistrationList>();
+        
     // Main loop
     bool done = false;
 

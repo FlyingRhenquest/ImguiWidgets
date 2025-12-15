@@ -21,10 +21,14 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <format>
+#include <functional>
 #include <fr/ImguiWidgets.h>
+#include <fr/types/Typelist.h>
+#include <fr/types/Concepts.h>
 #include <imgui.h>
 #include <string>
 #include <memory>
+#include <unordered_map>
 
 namespace fr::Imgui {
 
@@ -36,8 +40,26 @@ namespace fr::Imgui {
    */
   
   class NodeEditorWindow : public GridWindow {
+
+    // Iteminfo associates menu items and the function to create that window
+
+    struct ItemInfo {
+      std::string name;
+      std::function<void()> create;
+    };
+    
     ImU32 _gridLineColor;
     float _squareSize;
+
+    /**
+     * menus holds a top level menu item name and a vector
+     * of menu items that exist under them. Each of these drives
+     * the creation of a different window type.
+     */
+    
+    std::unordered_map<std::string, std::vector<std::shared_ptr<ItemInfo>>> _menus;
+
+    
   public:
     using Type = NodeEditorWindow;
     using PtrType = std::shared_ptr<Type>;
@@ -46,6 +68,22 @@ namespace fr::Imgui {
     boost::signals2::signal<void()> exitEvent;
 
     NodeEditorWindow(const std::string &label = "Node Editor") : Parent(label) {
+    }
+
+    template <typename List>
+    requires fr::types::IsUnique<List>
+    void buildMenus() {
+      using Rest = List::tail;
+      auto info = std::make_shared<ItemInfo>();
+      info->name = Registration::Record<typename List::head::type>::name;
+      info->create = [&]() {
+        Registration::createWindow<NodeEditorWindow, typename List::head::type>(*this);
+      };
+      
+      _menus[Registration::Record<typename List::head::type>::topMenuName].push_back(info);
+      if constexpr(!std::is_void_v<typename Rest::head::type>) {
+        buildMenus<Rest>();
+      }
     }
 
     virtual ~NodeEditorWindow() {}

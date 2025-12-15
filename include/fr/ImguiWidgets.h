@@ -16,6 +16,8 @@
 
 #pragma once
 
+#include <fr/Imgui/Registration.h>
+
 #include <fr/Imgui/CommitableNodeWindow.h>
 #include <fr/Imgui/GraphNodeWindow.h>
 #include <fr/Imgui/GridWindow.h>

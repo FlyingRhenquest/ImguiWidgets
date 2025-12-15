@@ -11,13 +11,9 @@ set(CMAKE_CXX_EXTENSIONS ON)
 find_package(PkgConfig)
 
 option(IMGUI_USE_BACKEND "OPENGL")
-option(USE_REQUIREMENTS_MANAGER "ON")
 
 if (NOT IMGUI_USE_BACKEND)
   set(IMGUI_USE_BACKEND "OPENGL")
-endif()
-if (NOT USE_REQUIREMENTS_MANAGER)
-  set(USE_REQUIREMENTS_MANAGER "ON")
 endif()
 
 set(LINK_LIBRARIES "")
@@ -28,11 +24,14 @@ set(LIBRARY_SOURCE
   "${CMAKE_CURRENT_SOURCE_DIR}/src/NodeEditorWindow.cpp"
 )
 
-if (USE_REQUIREMENTS_MANAGER)
-  add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/RequirementsManager")
-  # list(APPEND INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/RequirementsManager/include")
-  list(APPEND LINK_LIBRARIES "FR::RequirementsManager")
-endif()
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/types")
+add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/RequirementsManager")
+
+list(APPEND INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/RequirementsManager/include")
+list(APPEND LINK_LIBRARIES "FR::RequirementsManager")
+LIST(APPEND INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/types/include")
+list(APPEND LINK_LIBRARIES FR::types)
+
 
 set(VENDOR_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/vendor")
 set(VENDOR_SRC

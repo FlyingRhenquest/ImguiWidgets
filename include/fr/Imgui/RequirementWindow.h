@@ -43,6 +43,7 @@ namespace fr::Imgui {
     using Type = RequirementWindow;
     using PtrType = std::shared_ptr<Type>;
     using Parent = CommitableNodeWindow;
+    using NodeType = fr::RequirementsManager::Requirement;
 
     RequirementWindow(const std::string &title = "Requirement") : Parent(title) {
       _functional = false;
@@ -104,5 +105,22 @@ namespace fr::Imgui {
     }
     
   };
+
+  namespace Registration {
+
+    template <>
+    struct Record<RequirementWindow> {
+      using Type = RequirementWindow;
+      using NodeType = RequirementWindow::NodeType;
+
+      static constexpr char name[] = "Requirement";
+      static constexpr char topMenuName[] = "Process Nodes";
+
+      static constexpr void init(std::shared_ptr<Type> window) {}
+
+      static constexpr ImVec2 startingSize() { return ImVec2(300,300); }      
+    };
+    
+  }
   
 }

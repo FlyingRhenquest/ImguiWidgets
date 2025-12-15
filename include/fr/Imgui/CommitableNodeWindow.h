@@ -31,6 +31,9 @@ namespace fr::Imgui {
     using Type = CommitableNodeWindow;
     using PtrType = std::shared_ptr<Type>;
     using Parent = NodeWindow;
+    using NodeType = fr::RequirementsManager::CommitableNode;
+
+    static constexpr char WindowTitle[] = "CommitableNode";
 
     std::shared_ptr<NodeAnchor> _leftAnchor;
     std::shared_ptr<NodeAnchor> _rightAnchor;
@@ -49,7 +52,6 @@ namespace fr::Imgui {
       if (!_node) {
         _node = std::make_shared<fr::RequirementsManager::CommitableNode>();
       }
-
 
       this->addWidget(_leftAnchor->getLabel(), _leftAnchor);
       this->addWidget(_rightAnchor->getLabel(), _rightAnchor);
@@ -93,5 +95,21 @@ namespace fr::Imgui {
     }
     
   };
+
+  namespace Registration {
+    
+    template <>
+    struct Record<CommitableNodeWindow> {
+      using Type = CommitableNodeWindow;
+
+      static constexpr char name[] = "CommitableWindow";
+      static constexpr char topMenuName[] = "Test Node";
+
+      static constexpr void init(std::shared_ptr<Type> window) {};
+
+      static constexpr ImVec2 startingSize() { return ImVec2(300,100); }
+    };
+
+  }
   
 }

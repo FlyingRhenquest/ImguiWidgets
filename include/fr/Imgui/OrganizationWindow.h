@@ -37,6 +37,7 @@ namespace fr::Imgui {
     using Type = OrganizationWindow;
     using Parent = NodeWindow;
     using PtrType = std::shared_ptr<Type>;
+    using NodeType = fr::RequirementsManager::Organization;
 
     OrganizationWindow(std::string title = "Organization")
       : Parent(title) {
@@ -79,5 +80,22 @@ namespace fr::Imgui {
     }
     
   };
+
+  namespace Registration {
+
+    template <>
+    struct Record<OrganizationWindow> {
+      using Type = OrganizationWindow;
+      using NodeType = OrganizationWindow::NodeType;
+
+      static constexpr char name[] = "Organization";
+      static constexpr char topMenuName[] = "Org Nodes";
+
+      static constexpr void init(std::shared_ptr<Type> window) {}
+
+      static constexpr ImVec2 startingSize() { return ImVec2(300,300); }
+    };
+    
+  }
   
 }

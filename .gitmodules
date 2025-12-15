@@ -4,3 +4,6 @@
 [submodule "RequirementsManager"]
 	path = RequirementsManager
 	url = https://github.com/FlyingRhenquest/RequirementsManager.git
+[submodule "types"]
+	path = types
+	url = https://github.com/FlyingRhenquest/types.git

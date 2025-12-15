@@ -31,6 +31,7 @@ namespace fr::Imgui {
     using Type = TextWindow;
     using PtrType = std::shared_ptr<TextWindow>;
     using Parent = NodeWindow;
+    using NodeType = fr::RequirementsManager::Text;
 
     TextWindow(const std::string &title = "Text") : Parent(title) {
       _textLabel = getUniqueLabel("Text");
@@ -74,5 +75,23 @@ namespace fr::Imgui {
     }
     
   };
+
+  namespace Registration {
+
+    template <>
+    struct Record<TextWindow> {
+      using Type = TextWindow;
+      using NodeType = TextWindow::NodeType;
+
+      static constexpr char name[] = "Text";
+      static constexpr char topMenuName[] = "Utility Nodes";
+
+      static constexpr void init(std::shared_ptr<Type> window) {}
+
+      static constexpr ImVec2 startingSize() { return ImVec2(300,300); }
+      
+    };
+    
+  }
   
 }

@@ -41,6 +41,7 @@ namespace fr::Imgui {
     using Type = ProductWindow;
     using PtrType = std::shared_ptr<Type>;
     using Parent = CommitableNodeWindow;
+    using NodeType = fr::RequirementsManager::Product;
 
     ProductWindow(std::string title = "Product") : Parent(title) {
       memset(_titleText, '\0', titleLen);
@@ -87,5 +88,22 @@ namespace fr::Imgui {
     }
     
   };
+
+  namespace Registration {
+
+    template <>
+    struct Record<ProductWindow> {
+      using Type = ProductWindow;
+      using NodeType = ProductWindow::NodeType;
+
+      static constexpr char name[] = "Product";
+      static constexpr char topMenuName[] = "Process Nodes";
+
+      static constexpr void init(std::shared_ptr<Type> window) {};
+
+      static constexpr ImVec2 startingSize() { return ImVec2(300,300); }
+    };
+    
+  }
   
 }

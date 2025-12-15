@@ -37,6 +37,7 @@ namespace fr::Imgui {
     using Type = UseCaseWindow;
     using PtrType = std::shared_ptr<Type>;
     using Parent = CommitableNodeWindow;
+    using NodeType = fr::RequirementsManager::UseCase;
 
     UseCaseWindow(const std::string &title = "Use Case") : Parent(title) {
       memset(_nameText, '\0', nameLen);
@@ -79,5 +80,22 @@ namespace fr::Imgui {
       
     }
   };
+
+  namespace Registration {
+
+    template <>
+    struct Record<UseCaseWindow> {
+      using Type = UseCaseWindow;
+      using NodeType = UseCaseWindow::NodeType;
+
+      static constexpr char name[] = "Use Case";
+      static constexpr char topMenuName[] = "Process Nodes";
+
+      static constexpr void init(std::shared_ptr<Type> window) {}
+
+      static constexpr ImVec2 startingSize() { return ImVec2(300,200); }
+    };
+    
+  }
   
 }

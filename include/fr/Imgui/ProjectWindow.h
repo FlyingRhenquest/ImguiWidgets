@@ -40,6 +40,7 @@ namespace fr::Imgui {
     using Type = ProjectWindow;
     using PtrType = std::shared_ptr<Type>;
     using Parent = NodeWindow;
+    using NodeType = fr::RequirementsManager::Project;
 
     ProjectWindow(std::string title = "Project") : Parent(title) {
       memset(_nameText, '\0', nameLen);
@@ -88,5 +89,22 @@ namespace fr::Imgui {
     }
     
   };
+
+  namespace Registration {
+
+    template <>
+    struct Record<ProjectWindow> {
+      using Type = ProjectWindow;
+      using NodeType = ProductWindow::NodeType;
+
+      static constexpr char name[] = "Project";
+      static constexpr char topMenuName[] = "Process Nodes";
+
+      static constexpr void init(std::shared_ptr<Type> window) {}
+
+      static constexpr ImVec2 startingSize() { return ImVec2(300,200); }
+    };
+    
+  }
   
 }

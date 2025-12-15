@@ -42,6 +42,7 @@ namespace fr::Imgui {
     using Type = StoryWindow;
     using PtrType = std::shared_ptr<StoryWindow>;
     using Parent = CommitableNodeWindow;
+    using NodeType = fr::RequirementsManager::Story;
 
     StoryWindow(const std::string &title = "Story") : Parent(title) {
       memset(_titleText, '\0', titleLen);
@@ -101,5 +102,22 @@ namespace fr::Imgui {
     }
 
   };
+
+  namespace Registration {
+
+    template <>
+    struct Record<StoryWindow> {
+      using Type = StoryWindow;
+      using NodeType = StoryWindow::NodeType;
+
+      static constexpr char name[] = "Story";
+      static constexpr char topMenuName[] = "Process Nodes";
+
+      static constexpr void init(std::shared_ptr<Type> window) {}
+
+      static constexpr ImVec2 startingSize() { return ImVec2(300,500); }
+    };
+    
+  }
   
 }

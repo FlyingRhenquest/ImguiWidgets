@@ -38,6 +38,7 @@ namespace fr::Imgui {
     using Type = GraphNodeWindow;
     using Parent = NodeWindow;
     using PtrType = std::shared_ptr<Type>;
+    using NodeType = fr::RequirementsManager::GraphNode;
 
     GraphNodeWindow(std::string title = "GraphNode")
       : Parent(title) {
@@ -73,5 +74,25 @@ namespace fr::Imgui {
     }
     
   };
+
+  namespace Registration {
+
+    template <>
+    struct Record<GraphNodeWindow> {
+      using Type = GraphNodeWindow;
+      using NodeType = GraphNodeWindow::NodeType;
+
+      static constexpr char name[] = "Graph Node";
+      static constexpr char topMenuName[] = "Utility Nodes";
+
+      static constexpr void init(std::shared_ptr<Type> window) {
+        window->setDisplayDebugButton(true);
+      }
+
+      static constexpr ImVec2 startingSize() { return ImVec2(300,300); }
+      
+    };
+    
+  }
   
 }

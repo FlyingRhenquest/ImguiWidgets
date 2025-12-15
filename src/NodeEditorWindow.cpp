@@ -48,68 +48,16 @@ namespace fr::Imgui {
           ImGui::EndMenu();
         }
 
-        // New Node Menu
-
-        if (ImGui::BeginMenu("New Node")) {
-
-          if (ImGui::MenuItem("GraphNode")) {
-            auto graph = std::make_shared<fr::Imgui::GraphNodeWindow>();
-            graph->init();
-            graph->setStartingSize(300, 200);
-            graph->setDisplayDebugButton(true);
-            add(graph->idString(), graph);
+        // Render Registration-based windows
+        for (auto [item, infoVec] : _menus) {
+          if (ImGui::BeginMenu(item.c_str())) {
+            for (auto info : infoVec) {
+              if (ImGui::MenuItem(info->name.c_str())) {
+                info->create();
+              }
+            }
+            ImGui::EndMenu();
           }
-
-          if (ImGui::MenuItem("Organization")) {
-            auto org = std::make_shared<fr::Imgui::OrganizationWindow>();
-            org->init();
-            org->setStartingSize(300, 300);
-            add(org->idString(), org);
-          }
-
-          if (ImGui::MenuItem("Product")) {
-            auto prod = std::make_shared<fr::Imgui::ProductWindow>();
-            prod->init();
-            prod->setStartingSize(300, 200);
-            add(prod->idString(), prod);
-          }
-
-          if (ImGui::MenuItem("Project")) {
-            auto proj = std::make_shared<fr::Imgui::ProjectWindow>();
-            proj->init();
-            proj->setStartingSize(300, 200);
-            add(proj->idString(), proj);
-          }
-
-          if (ImGui::MenuItem("Requirement")) {
-            auto req = std::make_shared<fr::Imgui::RequirementWindow>();
-            req->init();
-            req->setStartingSize(300, 300);
-            add(req->idString(), req);
-          }
-
-          if (ImGui::MenuItem("Story")) {
-            auto story = std::make_shared<fr::Imgui::StoryWindow>();
-            story->init();
-            story->setStartingSize(300,500);
-            add(story->idString(), story);
-          }
-
-          if (ImGui::MenuItem("Text")) {
-            auto text = std::make_shared<fr::Imgui::TextWindow>();
-            text->init();
-            text->setStartingSize(300, 400);
-            add(text->idString(), text);
-          }
-
-          if (ImGui::MenuItem("UseCase")) {
-            auto usecase = std::make_shared<fr::Imgui::UseCaseWindow>();
-            usecase->init();
-            usecase->setStartingSize(300, 200);
-            add(usecase->idString(), usecase);
-          }
-          
-          ImGui::EndMenu();
         }
         
       }
