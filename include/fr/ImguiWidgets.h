@@ -19,8 +19,10 @@
 #include <fr/Imgui/Registration.h>
 
 #include <fr/Imgui/CommitableNodeWindow.h>
+#include <fr/Imgui/CompletedWindow.h>
 #include <fr/Imgui/GraphNodeWindow.h>
 #include <fr/Imgui/GridWindow.h>
+#include <fr/Imgui/KeyValueWindow.h>
 #include <fr/Imgui/NodeAnchor.h>
 #include <fr/Imgui/NodeEditorWindow.h>
 #include <fr/Imgui/NodeWindow.h>

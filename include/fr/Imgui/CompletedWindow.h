@@ -22,31 +22,32 @@
 
 namespace fr::Imgui {
 
-  class TextWindow : public NodeWindow {
+  class CompletedWindow : public NodeWindow {
   protected:
-    std::string _text;
-    std::string _textLabel;
-    
+    std::string _description;
+    std::string _descriptionLabel;
+
   public:
-    using Type = TextWindow;
+    using Type = CompletedWindow;
     using PtrType = std::shared_ptr<Type>;
     using Parent = NodeWindow;
-    using NodeType = fr::RequirementsManager::Text;
+    using NodeType = fr::RequirementsManager::Completed;
 
-    TextWindow(const std::string &title = "Text") : Parent(title) {
-      _textLabel = getUniqueLabel("##Text");
+    CompletedWindow(const std::string &title = "Completed") : Parent(title) {
+      _descriptionLabel = getUniqueLabel("##Description");
     }
 
-    virtual ~TextWindow() {}
+    virtual ~CompletedWindow() {}
 
     void init() override {
       if (!_node) {
-        _node = std::make_shared<fr::RequirementsManager::Text>();
+        _node = std::make_shared<NodeType>();
         _node->init();
       }
-      auto node = dynamic_pointer_cast<fr::RequirementsManager::Text>(_node);
+
+      auto node = dynamic_pointer_cast<NodeType>(_node);
       if (node) {
-        _text = node->getText();
+        _description = node->getDescription();
       }
 
       Parent::init();
@@ -55,21 +56,21 @@ namespace fr::Imgui {
     void begin() override {
       Parent::begin();
 
-      auto node = dynamic_pointer_cast<fr::RequirementsManager::Text>(_node);
+      auto node = dynamic_pointer_cast<NodeType>(_node);
       if (node) {
         auto inputTextFlags = ImGuiInputTextFlags_ReadOnly;
         if (_editable) {
           inputTextFlags = (ImGuiInputTextFlags_) 0;
         }
-        ImGui::Text("Text:");
-        if (ImGui::InputTextMultiline(_textLabel.c_str(),
-                                      &_text,
+        ImGui::Text("Description:");
+        if (ImGui::InputTextMultiline(_descriptionLabel.c_str(),
+                                      &_description,
                                       ImVec2(0,0),
                                       inputTextFlags)) {
-          node->setText(_text);
+          node->setDescription(_description);
         }
       } else {
-        ImGui::Text("If you're seeing this, this window somehow doesn't have a node");
+                ImGui::Text("If you're seeing this, this window somehow doesn't have a node");
         ImGui::Text("This should be impossible.");
       }
     }
@@ -79,19 +80,19 @@ namespace fr::Imgui {
   namespace Registration {
 
     template <>
-    struct Record<TextWindow> {
-      using Type = TextWindow;
-      using NodeType = TextWindow::NodeType;
+    struct Record<CompletedWindow> {
 
-      static constexpr char name[] = "Text";
+      using Type = CompletedWindow;
+      using NodeType = CompletedWindow::NodeType;
+
+      static constexpr char name[] = "Completed";
       static constexpr char topMenuName[] = "Utility Nodes";
 
       static constexpr void init(std::shared_ptr<Type> window) {}
-
       static constexpr ImVec2 startingSize() { return ImVec2(300,300); }
       
     };
-    
+
   }
   
 }

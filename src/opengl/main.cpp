@@ -138,7 +138,9 @@ int main(int, char**)
       fr::Imgui::RequirementWindow,
       fr::Imgui::OrganizationWindow,
       fr::Imgui::StoryWindow,
-      fr::Imgui::UseCaseWindow      
+      fr::Imgui::UseCaseWindow,
+      fr::Imgui::CompletedWindow,
+      fr::Imgui::KeyValueWindow
       >;
     FRDemoWindow->buildMenus<WindowsRegistrationList>();
         
