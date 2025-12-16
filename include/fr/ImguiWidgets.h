@@ -32,6 +32,7 @@
 #include <fr/Imgui/RequirementWindow.h>
 #include <fr/Imgui/StoryWindow.h>
 #include <fr/Imgui/TextWindow.h>
+#include <fr/Imgui/TimeEstimateWindow.h>
 #include <fr/Imgui/UseCaseWindow.h>
 #include <fr/Imgui/Widget.h>
 #include <fr/Imgui/WidgetApi.h>

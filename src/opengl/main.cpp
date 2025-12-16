@@ -133,6 +133,7 @@ int main(int, char**)
     using WindowsRegistrationList = fr::types::Typelist<
       fr::Imgui::GraphNodeWindow,
       fr::Imgui::TextWindow,
+      fr::Imgui::TimeEstimateWindow,
       fr::Imgui::ProductWindow,
       fr::Imgui::ProjectWindow,
       fr::Imgui::RequirementWindow,

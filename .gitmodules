@@ -7,3 +7,6 @@
 [submodule "types"]
 	path = types
 	url = https://github.com/FlyingRhenquest/types.git
+[submodule "ImGuiDatePicker"]
+	path = ImGuiDatePicker
+	url = https://github.com/DnA-IntRicate/ImGuiDatePicker.git

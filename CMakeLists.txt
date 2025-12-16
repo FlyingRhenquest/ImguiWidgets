@@ -27,9 +27,10 @@ set(LIBRARY_SOURCE
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/types")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/RequirementsManager")
 
+list(APPEND INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/ImGuiDatePicker")
 list(APPEND INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/RequirementsManager/include")
 list(APPEND LINK_LIBRARIES "FR::RequirementsManager")
-LIST(APPEND INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/types/include")
+list(APPEND INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/types/include")
 list(APPEND LINK_LIBRARIES FR::types)
 
 
@@ -41,6 +42,7 @@ set(VENDOR_SRC
   "${VENDOR_SOURCE_DIR}/imgui_tables.cpp"
   "${VENDOR_SOURCE_DIR}/imgui_demo.cpp"
   "${VENDOR_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/ImGuiDatePickerWrapper.cpp"
 )
 
 set(VENDOR_HEADERS
@@ -53,7 +55,7 @@ set(VENDOR_HEADERS
 
 set(VENDOR_BACKEND_SRC "")
 
-set(INCLUDE_DIRS
+list(APPEND INCLUDE_DIRS
   "${CMAKE_CURRENT_SOURCE_DIR}/include"
   "${VENDOR_SOURCE_DIR}"
   "${VENDOR_SOURCE_DIR}/backends"

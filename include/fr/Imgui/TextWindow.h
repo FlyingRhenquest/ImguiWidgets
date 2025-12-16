@@ -41,10 +41,10 @@ namespace fr::Imgui {
 
     void init() override {
       if (!_node) {
-        _node = std::make_shared<fr::RequirementsManager::Text>();
+        _node = std::make_shared<NodeType>();
         _node->init();
       }
-      auto node = dynamic_pointer_cast<fr::RequirementsManager::Text>(_node);
+      auto node = dynamic_pointer_cast<NodeType>(_node);
       if (node) {
         _text = node->getText();
       }
@@ -55,7 +55,7 @@ namespace fr::Imgui {
     void begin() override {
       Parent::begin();
 
-      auto node = dynamic_pointer_cast<fr::RequirementsManager::Text>(_node);
+      auto node = dynamic_pointer_cast<NodeType>(_node);
       if (node) {
         auto inputTextFlags = ImGuiInputTextFlags_ReadOnly;
         if (_editable) {
