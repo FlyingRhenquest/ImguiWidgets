@@ -20,6 +20,7 @@
 
 #include <fr/Imgui/CommitableNodeWindow.h>
 #include <fr/Imgui/CompletedWindow.h>
+#include <fr/Imgui/EffortWindow.h>
 #include <fr/Imgui/GraphNodeWindow.h>
 #include <fr/Imgui/GridWindow.h>
 #include <fr/Imgui/KeyValueWindow.h>

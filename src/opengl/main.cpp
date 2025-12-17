@@ -131,17 +131,18 @@ int main(int, char**)
     auto FRDemoWindow = std::make_shared<fr::Imgui::NodeEditorWindow>();
 
     using WindowsRegistrationList = fr::types::Typelist<
+      fr::Imgui::CompletedWindow,
+      fr::Imgui::EffortWindow,
       fr::Imgui::GraphNodeWindow,
-      fr::Imgui::TextWindow,
-      fr::Imgui::TimeEstimateWindow,
+      fr::Imgui::KeyValueWindow,
+      fr::Imgui::OrganizationWindow,
       fr::Imgui::ProductWindow,
       fr::Imgui::ProjectWindow,
       fr::Imgui::RequirementWindow,
-      fr::Imgui::OrganizationWindow,
       fr::Imgui::StoryWindow,
-      fr::Imgui::UseCaseWindow,
-      fr::Imgui::CompletedWindow,
-      fr::Imgui::KeyValueWindow
+      fr::Imgui::TextWindow,
+      fr::Imgui::TimeEstimateWindow,
+      fr::Imgui::UseCaseWindow
       >;
     FRDemoWindow->buildMenus<WindowsRegistrationList>();
         
