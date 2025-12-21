@@ -22,6 +22,7 @@
 #include <fr/Imgui/CommitableNodeWindow.h>
 #include <fr/Imgui/CompletedWindow.h>
 #include <fr/Imgui/EffortWindow.h>
+#include <fr/Imgui/EmailAddressWindow.h>
 #include <fr/Imgui/GoalWindow.h>
 #include <fr/Imgui/GraphNodeWindow.h>
 #include <fr/Imgui/GridWindow.h>
@@ -30,8 +31,10 @@
 #include <fr/Imgui/NodeEditorWindow.h>
 #include <fr/Imgui/NodeWindow.h>
 #include <fr/Imgui/OrganizationWindow.h>
+#include <fr/Imgui/PersonWindow.h>
 #include <fr/Imgui/ProductWindow.h>
 #include <fr/Imgui/ProjectWindow.h>
+#include <fr/Imgui/PurposeWindow.h>
 #include <fr/Imgui/RequirementWindow.h>
 #include <fr/Imgui/RoleWindow.h>
 #include <fr/Imgui/StoryWindow.h>

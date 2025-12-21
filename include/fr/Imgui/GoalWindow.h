@@ -66,9 +66,11 @@ namespace fr::Imgui {
     virtual ~GoalWindow() {}
 
     void init() override {
+      bool inittedNode = false;
       if (!_node) {
         _node = std::make_shared<NodeType>();
         _node->init();
+        inittedNode = true;
       }
       auto node = dynamic_pointer_cast<NodeType>(_node);
       if (node) {
@@ -77,8 +79,16 @@ namespace fr::Imgui {
         _outcome = node->getOutcome();
         _context = node->getContext();
         _alignment = node->getAlignment();
-        _targetDate = node->getTargetDate();
+        _targetDate = node->getTargetDate();        
         auto now = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
+        if (inittedNode) {
+          // If we created the node, set target date to now
+          _targetDate = now;
+          node->setTargetDate(now);
+        } else {
+          // Otherwise put target date in date picker
+          now = _targetDate;
+        }
         _tmNow = *std::gmtime(&now);
       }
       Parent::init();
@@ -90,7 +100,6 @@ namespace fr::Imgui {
 
       if (node) {
         auto inputTextFlags = ImGuiInputTextFlags_ReadOnly;
-        // Do not allow any editing if node is committed
         if (_editable) {
           inputTextFlags = (ImGuiInputTextFlags_) 0;
         }
