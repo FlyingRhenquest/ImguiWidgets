@@ -113,7 +113,7 @@ namespace fr::Imgui {
     }
     ImGui::Text("Node ID: ");
     ImGui::SameLine();
-    ImGui::InputText(_nodeIdLabel.c_str(), _idText, idTextLen, ImGuiInputTextFlags_ReadOnly);
+    ImGui::InputText(_nodeIdLabel.c_str(), _idText, idTextLen - 1, ImGuiInputTextFlags_ReadOnly);
   }
 
   void NodeWindow::end() {

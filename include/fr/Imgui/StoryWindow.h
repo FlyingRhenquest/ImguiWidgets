@@ -23,7 +23,7 @@
 namespace fr::Imgui {
 
   class StoryWindow : public CommitableNodeWindow {
-    static const size_t titleLen = 200;
+    static const size_t titleLen = 201;
     char _titleText[titleLen];
     std::string _titleLabel;
     std::string _goalLabel;
@@ -34,7 +34,7 @@ namespace fr::Imgui {
     void setTitleText() {
       auto node = dynamic_pointer_cast<fr::RequirementsManager::Story>(_node);
       if (node) {
-        strncpy(_titleText, node->getTitle().c_str(), titleLen);
+        strncpy(_titleText, node->getTitle().c_str(), titleLen - 1);
       }
     }
 
@@ -75,7 +75,7 @@ namespace fr::Imgui {
         ImGui::SameLine();
         if (ImGui::InputText(_titleLabel.c_str(),
                              _titleText,
-                             titleLen,
+                             titleLen - 1,
                              inputTextFlags)) {
           node->setTitle(_titleText);
         }

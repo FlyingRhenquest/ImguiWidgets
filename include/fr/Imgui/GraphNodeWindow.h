@@ -22,14 +22,14 @@
 namespace fr::Imgui {
 
   class GraphNodeWindow : public NodeWindow {
-    static const size_t titleTextLen = 200;
+    static const size_t titleTextLen = 201;
     char _titleText[titleTextLen];
     std::string _titleTextLabel;
     
     void setTitleText() {
       auto node = dynamic_pointer_cast<fr::RequirementsManager::GraphNode>(_node);
       if (node) {
-        strncpy(_titleText, node->getTitle().c_str(), titleTextLen);
+        strncpy(_titleText, node->getTitle().c_str(), titleTextLen - 1);
       }
     }
 
@@ -65,7 +65,7 @@ namespace fr::Imgui {
 
       ImGui::Text("Title: ");
       ImGui::SameLine();
-      if (ImGui::InputText(_titleTextLabel.c_str(), _titleText, titleTextLen, inputTextFlags)) {
+      if (ImGui::InputText(_titleTextLabel.c_str(), _titleText, titleTextLen - 1, inputTextFlags)) {
         auto node = dynamic_pointer_cast<fr::RequirementsManager::GraphNode>(_node);
         if (node) {
           node->setTitle(_titleText);

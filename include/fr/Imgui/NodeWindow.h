@@ -43,7 +43,7 @@ namespace fr::Imgui {
     using NodeType = fr::RequirementsManager::Node;
 
     // Max ID text len
-    static constexpr size_t idTextLen = 50;
+    static constexpr size_t idTextLen = 51;
     // Default window title
     static constexpr char WindowTitle[] = "Node";
     
@@ -81,7 +81,7 @@ namespace fr::Imgui {
     
     void setIdText() {
       std::string text = std::format("{}", _node->idString());
-      strncpy(_idText, text.c_str(), idTextLen);
+      strncpy(_idText, text.c_str(), idTextLen - 1);
     }
 
   public:

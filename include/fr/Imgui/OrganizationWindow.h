@@ -22,14 +22,14 @@
 namespace fr::Imgui {
 
   class OrganizationWindow : public NodeWindow {
-    static const size_t nameLen = 200;
+    static const size_t nameLen = 201;
     char _nameText[nameLen];
     std::string _nameTextLabel;
 
     void setName() {
       auto node = dynamic_pointer_cast<fr::RequirementsManager::Organization>(_node);
       if (node) {
-        strncpy(_nameText, node->getName().c_str(), nameLen);
+        strncpy(_nameText, node->getName().c_str(), nameLen - 1);
       }
     }
 
@@ -73,7 +73,7 @@ namespace fr::Imgui {
 
         ImGui::Text("Name: ");
         ImGui::SameLine();
-        if (ImGui::InputText(_nameTextLabel.c_str(), _nameText, nameLen, inputTextFlags)) {
+        if (ImGui::InputText(_nameTextLabel.c_str(), _nameText, nameLen - 1, inputTextFlags)) {
           node->setName(_nameText);
         }
       }

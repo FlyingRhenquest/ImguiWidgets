@@ -23,7 +23,7 @@
 namespace fr::Imgui {
 
   class KeyValueWindow : public NodeWindow {
-    static const size_t keyLen = 200;
+    static const size_t keyLen = 201;
     char _keyText[keyLen];
     std::string _keyLabel;
     std::string _value;
@@ -32,7 +32,7 @@ namespace fr::Imgui {
     void setKeyValueText() {
       auto node = dynamic_pointer_cast<fr::RequirementsManager::KeyValue>(_node);
       if (node) {
-        strncpy(_keyText, node->getKey().c_str(), keyLen);
+        strncpy(_keyText, node->getKey().c_str(), keyLen - 1);
         _value = node->getValue();
       }
     }
@@ -76,7 +76,7 @@ namespace fr::Imgui {
         ImGui::SameLine();
         if (ImGui::InputText(_keyLabel.c_str(),
                              _keyText,
-                             keyLen,
+                             keyLen - 1,
                              inputTextFlags)) {
           node->setKey(_keyText);
         }

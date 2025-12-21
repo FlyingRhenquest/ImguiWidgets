@@ -23,7 +23,7 @@
 namespace fr::Imgui {
 
   class ProjectWindow : public NodeWindow {
-    static const size_t nameLen = 200;
+    static const size_t nameLen = 201;
     char _nameText[nameLen];
     std::string _nameLabel;
     std::string _descriptionLabel;
@@ -32,7 +32,7 @@ namespace fr::Imgui {
     void setNameText() {
       auto node = dynamic_pointer_cast<fr::RequirementsManager::Project>(_node);
       if (node) {
-        strncpy(_nameText, node->getName().c_str(), nameLen);
+        strncpy(_nameText, node->getName().c_str(), nameLen - 1);
       }
     }
 
@@ -71,7 +71,7 @@ namespace fr::Imgui {
         ImGui::SameLine();
         if (ImGui::InputText(_nameLabel.c_str(),
                              _nameText,
-                             nameLen,
+                             nameLen - 1,
                              inputTextFlags)) {
           node->setName(_nameText);
         }
