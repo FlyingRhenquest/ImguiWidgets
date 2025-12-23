@@ -39,11 +39,11 @@ namespace fr::Imgui {
     if ((_type == AnchorType::Up && connection->anchorType != AnchorType::Down) ||
         (_type == AnchorType::Down && connection->anchorType != AnchorType::Up) ||
         (_type == AnchorType::Left && connection->anchorType != AnchorType::Right) ||
-        (_type == AnchorType::Right && connection->anchorType != AnchorType::Left)) {
+        (_type == AnchorType::Right && connection->anchorType != AnchorType::Left)
+        ) {
       std::cout << "Reject connection: wrong anchor type" << std::endl;
-    return;
-    }
-      
+      return;
+    }      
     if (!_connections.contains(connection->sourceNode->idString())) {
       auto otherSide = std::make_shared<NodeDragPayload>();
       _connections[connection->sourceNode->idString()] = connection;

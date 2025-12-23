@@ -26,12 +26,14 @@
 #include <fr/Imgui/GoalWindow.h>
 #include <fr/Imgui/GraphNodeWindow.h>
 #include <fr/Imgui/GridWindow.h>
+#include <fr/Imgui/InternationalAddressWindow.h>
 #include <fr/Imgui/KeyValueWindow.h>
 #include <fr/Imgui/NodeAnchor.h>
 #include <fr/Imgui/NodeEditorWindow.h>
 #include <fr/Imgui/NodeWindow.h>
 #include <fr/Imgui/OrganizationWindow.h>
 #include <fr/Imgui/PersonWindow.h>
+#include <fr/Imgui/PhoneNumberWindow.h>
 #include <fr/Imgui/ProductWindow.h>
 #include <fr/Imgui/ProjectWindow.h>
 #include <fr/Imgui/PurposeWindow.h>
