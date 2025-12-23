@@ -22,37 +22,36 @@
 
 namespace fr::Imgui {
 
-  class InternationalAddressWindow : public NodeWindow {
-    static const size_t countryCodeLen = 21;
-    static const size_t localityLen = 201;
-    static const size_t postalCodeLen = 51;
-    char _countryCode[countryCodeLen];
-    char _locality[localityLen];
-    char _postalCode[postalCodeLen];
-    std::string _countryCodeLabel;
-    std::string _localityLabel;
-    std::string _postalCodeLabel;
+  class USAddressWindow : public NodeWindow {
+    static const size_t cityLen = 101;
+    static const size_t stateLen = 41;
+    static const size_t zipCodeLen = 21;
     std::string _addressLines;
+    char _city[cityLen];
+    char _state[stateLen];
+    char _zipCode[zipCodeLen];
     std::string _addressLinesLabel;
+    std::string _cityLabel;
+    std::string _stateLabel;
+    std::string _zipCodeLabel;
 
   public:
-    using Type = InternationalAddressWindow;
+    using Type = USAddressWindow;
     using PtrType = std::shared_ptr<Type>;
     using Parent = NodeWindow;
-    using NodeType = fr::RequirementsManager::InternationalAddress;
+    using NodeType = fr::RequirementsManager::USAddress;
 
-    InternationalAddressWindow(const std::string &title = "International Address") : Parent(title) {
-      memset(_countryCode, '\0', countryCodeLen);
-      memset(_locality, '\0', localityLen);
-      memset(_postalCode, '\0', postalCodeLen);
-      _countryCodeLabel = getUniqueLabel("##CountryCode");
-      _localityLabel = getUniqueLabel("##Locality");
-      _postalCodeLabel = getUniqueLabel("##PostalCode");
+    USAddressWindow(const std::string &title = "US Address") : Parent(title) {
+      memset(_city, '\0', cityLen);
+      memset(_state, '\0', stateLen);
+      memset(_zipCode, '\0', zipCodeLen);
       _addressLinesLabel = getUniqueLabel("##AddressLines");
+      _cityLabel = getUniqueLabel("##City");
+      _stateLabel = getUniqueLabel("##State");
+      _zipCodeLabel = getUniqueLabel("##ZipCode");
     }
 
-    virtual ~InternationalAddressWindow() {
-    }
+    virtual ~USAddressWindow() {}
 
     void init() override {
       if (!_node) {
@@ -61,17 +60,17 @@ namespace fr::Imgui {
       }
       auto node = dynamic_pointer_cast<NodeType>(_node);
       if (node) {
-        strncpy(_countryCode, node->getCountryCode().c_str(), countryCodeLen - 1);
-        strncpy(_locality, node->getLocality().c_str(), localityLen - 1);
-        strncpy(_postalCode, node->getPostalCode().c_str(), postalCodeLen - 1);
         _addressLines = node->getAddressLines();
+        strncpy(_city, node->getCity().c_str(), cityLen - 1);
+        strncpy(_state, node->getState().c_str(), stateLen - 1);
+        strncpy(_zipCode, node->getZipCode().c_str(), zipCodeLen - 1);
       }
       Parent::init();
     }
 
     void begin() override {
       Parent::begin();
-
+      
       auto node = dynamic_pointer_cast<NodeType>(_node);
       if (node) {
         auto inputTextFlags = ImGuiInputTextFlags_ReadOnly;
@@ -79,37 +78,36 @@ namespace fr::Imgui {
         if (_editable) {
           inputTextFlags = (ImGuiInputTextFlags_) 0;
         }
-        
-        ImGui::Text("Country code: ");
-        ImGui::SameLine();
-        if (ImGui::InputText(_countryCodeLabel.c_str(),
-                             _countryCode,
-                             countryCodeLen - 1,
-                             inputTextFlags)) {
-          node->setCountryCode(_countryCode);
-        }
-        ImGui::Text("Address: ");
+        ImGui::Text("Address:");
         if (ImGui::InputTextMultiline(_addressLinesLabel.c_str(),
                                       &_addressLines,
                                       ImVec2(0,0),
                                       inputTextFlags)) {
           node->setAddressLines(_addressLines);
         }
-        ImGui::Text("Locality: ");
+        ImGui::Text("City: ");
         ImGui::SameLine();
-        if (ImGui::InputText(_localityLabel.c_str(),
-                             _locality,
-                             localityLen - 1,
+        if (ImGui::InputText(_cityLabel.c_str(),
+                             _city,
+                             cityLen - 1,
                              inputTextFlags)) {
-          node->setLocality(_locality);
+          node->setCity(_city);
         }
-        ImGui::Text("Postal Code: ");
+        ImGui::Text("State: ");
         ImGui::SameLine();
-        if (ImGui::InputText(_postalCodeLabel.c_str(),
-                             _postalCode,
-                             postalCodeLen - 1,
+        if (ImGui::InputText(_stateLabel.c_str(),
+                             _state,
+                             stateLen - 1,
                              inputTextFlags)) {
-          node->setPostalCode(_postalCode);
+          node->setState(_state);
+        }
+        ImGui::Text("Zip Code: ");
+        ImGui::SameLine();
+        if (ImGui::InputText(_zipCodeLabel.c_str(),
+                             _zipCode,
+                             zipCodeLen - 1,
+                             inputTextFlags)) {
+          node->setZipCode(_zipCode);
         }
       } else {
         ImGui::Text("If you're seeing this text, this window somehow doesn't have a node.");
@@ -120,16 +118,16 @@ namespace fr::Imgui {
 
   namespace Registration {
 
-    template<>
-    struct Record<InternationalAddressWindow> {
-      using Type = InternationalAddressWindow;
-      using NodeType = InternationalAddressWindow::NodeType;
+    template <>
+    struct Record<USAddressWindow> {
+      using Type = USAddressWindow;
+      using NodeType = USAddressWindow::NodeType;
 
-      static constexpr char name[] = "International Address";
+      static constexpr char name[] = "US Address";
       static constexpr char topMenuName[] = "Utility Nodes";
 
       static constexpr void init(std::shared_ptr<Type> window) {}
-      static constexpr ImVec2 startingSize() { return ImVec2(300, 400); }
+      static constexpr ImVec2 startingSize() { return ImVec2(300,400); }
     };
     
   }

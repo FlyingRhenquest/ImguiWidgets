@@ -22,6 +22,7 @@
 #include <fr/Imgui/CommitableNodeWindow.h>
 #include <fr/Imgui/CompletedWindow.h>
 #include <fr/Imgui/EffortWindow.h>
+#include <fr/Imgui/EventWindow.h>
 #include <fr/Imgui/EmailAddressWindow.h>
 #include <fr/Imgui/GoalWindow.h>
 #include <fr/Imgui/GraphNodeWindow.h>
@@ -42,6 +43,7 @@
 #include <fr/Imgui/StoryWindow.h>
 #include <fr/Imgui/TextWindow.h>
 #include <fr/Imgui/TimeEstimateWindow.h>
+#include <fr/Imgui/USAddressWindow.h>
 #include <fr/Imgui/UseCaseWindow.h>
 #include <fr/Imgui/Widget.h>
 #include <fr/Imgui/WidgetApi.h>

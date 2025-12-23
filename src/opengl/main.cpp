@@ -134,6 +134,7 @@ int main(int, char**)
       fr::Imgui::ActorWindow,
       fr::Imgui::CompletedWindow,
       fr::Imgui::EffortWindow,
+      fr::Imgui::EventWindow,
       fr::Imgui::EmailAddressWindow,
       fr::Imgui::GoalWindow,
       fr::Imgui::GraphNodeWindow,
@@ -150,6 +151,7 @@ int main(int, char**)
       fr::Imgui::StoryWindow,
       fr::Imgui::TextWindow,
       fr::Imgui::TimeEstimateWindow,
+      fr::Imgui::USAddressWindow,
       fr::Imgui::UseCaseWindow
       >;
     FRDemoWindow->buildMenus<WindowsRegistrationList>();
