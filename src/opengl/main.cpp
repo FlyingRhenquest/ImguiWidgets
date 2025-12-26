@@ -155,19 +155,8 @@ int main(int, char **) {
 
   auto FRDemoWindow = std::make_shared<fr::Imgui::NodeEditorWindow>();
 
-  using WindowsRegistrationList = fr::types::Typelist<
-      fr::Imgui::ActorWindow, fr::Imgui::CompletedWindow,
-      fr::Imgui::EffortWindow, fr::Imgui::EventWindow,
-      fr::Imgui::EmailAddressWindow, fr::Imgui::GoalWindow,
-      fr::Imgui::GraphNodeWindow, fr::Imgui::InternationalAddressWindow,
-      fr::Imgui::KeyValueWindow, fr::Imgui::OrganizationWindow,
-      fr::Imgui::PersonWindow, fr::Imgui::PhoneNumberWindow,
-      fr::Imgui::ProductWindow, fr::Imgui::ProjectWindow,
-      fr::Imgui::PurposeWindow, fr::Imgui::RequirementWindow,
-      fr::Imgui::RoleWindow, fr::Imgui::StoryWindow, fr::Imgui::TextWindow,
-      fr::Imgui::TimeEstimateWindow, fr::Imgui::USAddressWindow,
-      fr::Imgui::UseCaseWindow>;
-  FRDemoWindow->buildMenus<WindowsRegistrationList>();
+  // AllWindowList is defined in ImguiWidgets.h
+  FRDemoWindow->buildMenus<fr::Imgui::AllWindowList>();
 
   // Main loop
   bool done = false;
