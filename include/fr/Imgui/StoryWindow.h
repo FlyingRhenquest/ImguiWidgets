@@ -31,13 +31,6 @@ namespace fr::Imgui {
     std::string _benefitLabel;
     std::string _benefit;
 
-    void setTitleText() {
-      auto node = dynamic_pointer_cast<fr::RequirementsManager::Story>(_node);
-      if (node) {
-        strncpy(_titleText, node->getTitle().c_str(), titleLen - 1);
-      }
-    }
-
   public:
     using Type = StoryWindow;
     using PtrType = std::shared_ptr<StoryWindow>;
@@ -58,7 +51,12 @@ namespace fr::Imgui {
         _node = std::make_shared<fr::RequirementsManager::Story>();
         _node->init();
       }
-      setTitleText();
+      auto node = dynamic_pointer_cast<fr::RequirementsManager::Story>(_node);
+      if (node) {
+        strncpy(_titleText, node->getTitle().c_str(), titleLen - 1);
+        _goal = node->getGoal();
+        _benefit = node->getBenefit();
+      }
       Parent::init();
     }
 

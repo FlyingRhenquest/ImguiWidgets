@@ -15,8 +15,8 @@
  */
 
 #pragma once
+#include <fr/Imgui/AllWindows.h>
 #include <fr/Imgui/Registration.h>
-
 #include <fr/Imgui/ActorWindow.h>
 #include <fr/Imgui/CommitableNodeWindow.h>
 #include <fr/Imgui/CompletedWindow.h>
@@ -48,24 +48,5 @@
 #include <fr/Imgui/WidgetApi.h>
 #include <fr/Imgui/Window.h>
 
-// Set up a typelist with all window types. If you build an external
-// library that adds more windows, Typelist has a merge function you
-// can use to merge this typelist with a typelist you export to
-// easily enable window menu placement and creation for all the windows.
 
-#include <fr/types/Typelist.h>
 
-namespace fr::Imgui {
-  using AllWindowList = fr::types::Typelist<
-      fr::Imgui::ActorWindow, fr::Imgui::CompletedWindow,
-      fr::Imgui::EffortWindow, fr::Imgui::EventWindow,
-      fr::Imgui::EmailAddressWindow, fr::Imgui::GoalWindow,
-      fr::Imgui::GraphNodeWindow, fr::Imgui::InternationalAddressWindow,
-      fr::Imgui::KeyValueWindow, fr::Imgui::OrganizationWindow,
-      fr::Imgui::PersonWindow, fr::Imgui::PhoneNumberWindow,
-      fr::Imgui::ProductWindow, fr::Imgui::ProjectWindow,
-      fr::Imgui::PurposeWindow, fr::Imgui::RequirementWindow,
-      fr::Imgui::RoleWindow, fr::Imgui::StoryWindow, fr::Imgui::TextWindow,
-      fr::Imgui::TimeEstimateWindow, fr::Imgui::USAddressWindow,
-      fr::Imgui::UseCaseWindow>;
-}

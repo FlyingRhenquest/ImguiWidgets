@@ -29,13 +29,6 @@ namespace fr::Imgui {
     std::string _descriptionLabel;
     std::string _description;
 
-    void setTitleText() {
-      auto node = dynamic_pointer_cast<fr::RequirementsManager::Product>(_node);
-      if (node) {
-        strncpy(_titleText, node->getTitle().c_str(), titleLen - 1);
-      }
-    }
-    
   public:
 
     using Type = ProductWindow;
@@ -55,7 +48,11 @@ namespace fr::Imgui {
       if (!_node) {
         _node = std::make_shared<fr::RequirementsManager::Product>();
       }
-      setTitleText();
+      auto node = dynamic_pointer_cast<fr::RequirementsManager::Product>(_node);
+      if (node) {
+        strncpy(_titleText, node->getTitle().c_str(), titleLen - 1);
+        _description = node->getDescription();
+      }
       Parent::init();
     }
 

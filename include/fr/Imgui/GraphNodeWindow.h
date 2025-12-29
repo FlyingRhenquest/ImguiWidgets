@@ -17,6 +17,8 @@
 #pragma once
 
 #include <fr/Imgui/NodeWindow.h>
+#include <fr/Imgui/NodeEditorWindow.h>
+#include <fr/RequirementsManager/PqDatabase.h>
 #include <fr/RequirementsManager/GraphNode.h>
 
 namespace fr::Imgui {
@@ -25,6 +27,12 @@ namespace fr::Imgui {
     static const size_t titleTextLen = 201;
     char _titleText[titleTextLen];
     std::string _titleTextLabel;
+    std::string _saveLabel;
+    using WorkerThread = fr::RequirementsManager::WorkerThread;
+    using ThreadPool = fr::RequirementsManager::ThreadPool<WorkerThread>;
+    using SaveNodesNode = fr::RequirementsManager::SaveNodesNode<WorkerThread>;
+    std::shared_ptr<SaveNodesNode> _saver;
+    std::shared_ptr<ThreadPool> _threadpool;
     
     void setTitleText() {
       auto node = dynamic_pointer_cast<fr::RequirementsManager::GraphNode>(_node);
@@ -44,6 +52,7 @@ namespace fr::Imgui {
       : Parent(title) {
       memset(_titleText, '\0', titleTextLen);
       _titleTextLabel = getUniqueLabel("##Title");
+      _saveLabel = getUniqueLabel("Save to Database");
     }
 
     virtual ~GraphNodeWindow() {}
@@ -70,6 +79,32 @@ namespace fr::Imgui {
         if (node) {
           node->setTitle(_titleText);
         }
+      }
+
+      if (ImGui::Button(_saveLabel.c_str())) {
+        // Right now I'm just going to set all the nodes' change flags to true
+        // and kick off a save. I'll need to do a visual indicator to indicate that
+        // the save actually worked and clean this up a bit. It'd be nice to only
+        // display this button if something in the graph has actually changed.
+        _node->changed = true;
+        _node->traverse([](fr::RequirementsManager::Node::PtrType nextNode) {
+          nextNode->changed = true;
+        });
+        // If our parent is a NodeEditorWindow, get its threadpool
+        auto parentNodeEditor = std::dynamic_pointer_cast<NodeEditorWindow<AllWindowList>>(_parent);
+        if (!_threadpool && parentNodeEditor) {
+          _threadpool = parentNodeEditor->threadpool;
+        } else {
+          if (!_threadpool) {
+            _threadpool = std::make_shared<ThreadPool>();
+            _threadpool->startThreads(4);
+          }
+        }
+        if (!_saver) {
+          _saver = std::make_shared<SaveNodesNode>(_node);
+        }
+        // TODO: Set saver's complete callback up to indicate data was saved
+        _threadpool->enqueue(_saver);
       }
     }
     

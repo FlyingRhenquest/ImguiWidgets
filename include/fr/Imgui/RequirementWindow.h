@@ -31,13 +31,6 @@ namespace fr::Imgui {
     std::string _functionalLabel;
     bool _functional;
 
-    void setTitleText() {
-      auto node = dynamic_pointer_cast<fr::RequirementsManager::Requirement>(_node);
-      if (node) {
-        strncpy(_titleText, node->getTitle().c_str(), titleLen - 1);
-      }
-    }
-
   public:
 
     using Type = RequirementWindow;
@@ -57,19 +50,33 @@ namespace fr::Imgui {
 
     void init() override {
       if (!_node) {
-        _node = std::make_shared<fr::RequirementsManager::Requirement>();
+        _node = std::make_shared<NodeType>();
         _node->init();
-      }      
-      setTitleText();
+      }
+
       Parent::init();
     }
 
+    void beginning() override {
+      auto node = dynamic_pointer_cast<NodeType>(_node);
+      if (node) {
+        std::cout << "Requirement loading" << std::endl;
+        std::cout << "ID: " << node->idString() << std::endl;
+        std::cout << "Title: " << node->getTitle() << std::endl;
+        std::cout << "Text: " << node->getText() << std::endl;
+        std::cout << "Functional: " << node->isFunctional() << std::endl;
+        strncpy(_titleText, node->getTitle().c_str(), titleLen - 1);
+        _text = node->getText();
+        _functional = node->isFunctional();
+      }
+      Parent::beginning();
+    }
+    
     void begin() override {
       Parent::begin();
 
-      auto node = dynamic_pointer_cast<fr::RequirementsManager::Requirement>(_node);
+      auto node = dynamic_pointer_cast<NodeType>(_node);
       if (node) {
-        _functional = node->isFunctional();
         auto inputTextFlags = ImGuiInputTextFlags_ReadOnly;
         // Do not allow any editing if node is committed
         if (_editable && !node->isCommitted()) {

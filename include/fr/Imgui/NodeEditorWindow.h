@@ -23,8 +23,10 @@
 #include <boost/uuid/uuid_io.hpp>
 #include <format>
 #include <functional>
-#include <fr/ImguiWidgets.h>
+#include <fr/Imgui/AllWindows.h>
+#include <fr/Imgui/GridWindow.h>
 #include <fr/Imgui/WindowFactoryWindow.h>
+#include <fr/RequirementsManager/PqDatabase.h>
 #include <fr/types/Typelist.h>
 #include <fr/types/Concepts.h>
 #include <imgui.h>
@@ -75,8 +77,12 @@ namespace fr::Imgui {
 
     boost::signals2::signal<void()> exitEvent;
 
+    std::shared_ptr<fr::RequirementsManager::ThreadPool<fr::RequirementsManager::WorkerThread>> threadpool;
+
     NodeEditorWindow(const std::string &label = "Node Editor") : Parent(label) {
-      _databaseFactory = std::make_shared<WindowFactoryWindow<WindowList>>();      
+      _databaseFactory = std::make_shared<WindowFactoryWindow<WindowList>>();
+      threadpool = std::make_shared<fr::RequirementsManager::ThreadPool<fr::RequirementsManager::WorkerThread>>();
+      threadpool->startThreads(4);
     }
 
     template <typename List>

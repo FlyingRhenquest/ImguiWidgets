@@ -29,13 +29,6 @@ namespace fr::Imgui {
     std::string _descriptionLabel;
     std::string _description;
 
-    void setNameText() {
-      auto node = dynamic_pointer_cast<fr::RequirementsManager::Project>(_node);
-      if (node) {
-        strncpy(_nameText, node->getName().c_str(), nameLen - 1);
-      }
-    }
-
   public:
     using Type = ProjectWindow;
     using PtrType = std::shared_ptr<Type>;
@@ -54,7 +47,11 @@ namespace fr::Imgui {
       if (!_node) {
         _node = std::make_shared<fr::RequirementsManager::Project>();        
       }
-      setNameText();
+      auto node = dynamic_pointer_cast<fr::RequirementsManager::Project>(_node);
+      if (node) {
+        strncpy(_nameText, node->getName().c_str(), nameLen - 1);
+        _description = node->getDescription();
+      }
       Parent::init();
     }
 

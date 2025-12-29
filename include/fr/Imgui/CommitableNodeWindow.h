@@ -49,9 +49,6 @@ namespace fr::Imgui {
     virtual ~CommitableNodeWindow() {}
 
     void init() override {
-      if (!_node) {
-        _node = std::make_shared<fr::RequirementsManager::CommitableNode>();
-      }
 
       this->addWidget(_leftAnchor->getLabel(), _leftAnchor);
       this->addWidget(_rightAnchor->getLabel(), _rightAnchor);

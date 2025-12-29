@@ -46,12 +46,7 @@ fr::RequirementsManager::Node::PtrType NodeWindow::getNode() { return _node; }
 void NodeWindow::setDisplayDebugButton(bool d) { _displayDebugButton = d; }
 
 void NodeWindow::init() {
-  if (!_node) {
-    _node = std::make_shared<fr::RequirementsManager::Node>();
-  }
-  if (!_node->initted) {
-    _node->init();
-  }
+
   this->addWidget(_upAnchor->getLabel(), _upAnchor);
   this->addWidget(_downAnchor->getLabel(), _downAnchor);
 
