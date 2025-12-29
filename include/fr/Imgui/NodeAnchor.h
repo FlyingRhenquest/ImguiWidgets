@@ -139,7 +139,11 @@ namespace fr::Imgui {
     //
     // If a connection already exists, the connections should be removed
     // instead. removeConnection will handle that.
-    void establishConnection(std::shared_ptr<NodeDragPayload> connection);
+    //
+    // The second parameter is used to prevent establishConnection
+    // from trying to modify the node (Required if we're loading a graph)
+    void establishConnection(std::shared_ptr<NodeDragPayload> connection,
+                             bool modifyNode = true);
 
     // Remove a connection betrween two anchors
     void removeConnection(std::shared_ptr<NodeDragPayload> connection);

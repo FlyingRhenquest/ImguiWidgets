@@ -118,7 +118,7 @@ namespace fr::Imgui {
 
       static constexpr void init(std::shared_ptr<Type> window) {}
 
-      static constexpr ImVec2 startingSize() { return ImVec2(300,300); }      
+      static constexpr ImVec2 startingSize() { return ImVec2(300,350); }
     };
     
   }

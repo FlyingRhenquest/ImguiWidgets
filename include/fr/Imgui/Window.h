@@ -25,6 +25,7 @@
 #include <imgui.h>
 #include <string>
 #include <memory>
+#include <mutex>
 #include <unordered_map>
 
 namespace fr::Imgui {
@@ -49,6 +50,7 @@ namespace fr::Imgui {
     // Window color
     ImVec4 _backgroundColor;
     // A map of child windows to display
+    std::mutex _childrenMutex;
     std::unordered_map<std::string, Window::PtrType> _children;
     // A map of widgets to display
     std::unordered_map<std::string, std::shared_ptr<WidgetApi>> _widgets;
@@ -108,13 +110,11 @@ namespace fr::Imgui {
     // Add a child window. Key is just some string you can
     // use to retrieve the window later.
     virtual void add(const std::string& key, Window::PtrType child) {
+      std::lock_guard<std::mutex> lock(_childrenMutex);
       if (!_children.contains(key)) {
         _children[key] = child;
         child->setParent(shared_from_this());
-      } else {
-        std::string err = std::format("Window {} already exists in child list", key);
-        throw std::logic_error("err");
-      }
+      } 
     }
 
     // Add a widget. Key can be used to retrieve the widget
@@ -123,15 +123,13 @@ namespace fr::Imgui {
       if (!_widgets.contains(key)) {
         _widgets[key] = w;
         w->setParent(shared_from_this());
-      } else {
-        std::string err = std::format("Widget {} is already owned by Window {}", key, _label);
-        throw std::logic_error(err);
-      }
+      } 
     }
 
     // Retrieve a child window from the children list. Can return
     // a null shared ptr.
     Window::PtrType get(const std::string& key) {
+      std::lock_guard<std::mutex> lock(_childrenMutex);
       Window::PtrType ret;
       if (_children.contains(key)) {
         ret = _children[key];
@@ -141,6 +139,7 @@ namespace fr::Imgui {
 
     // Remove a child window from the children list
     void remove(const std::string& key) {
+      std::lock_guard<std::mutex> lock(_childrenMutex);
       if (_children.contains(key)) {
         _children.erase(key);
       }
@@ -167,6 +166,10 @@ namespace fr::Imgui {
       _startingSize.y = height;
     }
 
+    void setStartingSize(ImVec2 size) {
+      setStartingSize(size.x, size.y);
+    }
+
     ImVec4 getBackgroundColor() const {
       return _backgroundColor;
     }
@@ -179,9 +182,12 @@ namespace fr::Imgui {
     }
 
     virtual void renderChildren() {
-      for (auto [key, child] : _children) {
-        child->begin();
-        child->end();
+      {
+        std::lock_guard<std::mutex> lock(_childrenMutex);
+        for (auto [key, child] : _children) {
+          child->begin();
+          child->end();
+        }
       }
       for (auto [key, widget] : _widgets) {
         widget->begin();

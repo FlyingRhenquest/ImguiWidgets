@@ -153,7 +153,7 @@ int main(int, char **) {
 
   // Our state
 
-  auto FRDemoWindow = std::make_shared<fr::Imgui::NodeEditorWindow>();
+  auto FRDemoWindow = std::make_shared<fr::Imgui::NodeEditorWindow<fr::Imgui::AllWindowList>>();
 
   // AllWindowList is defined in ImguiWidgets.h
   FRDemoWindow->buildMenus<fr::Imgui::AllWindowList>();

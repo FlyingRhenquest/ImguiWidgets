@@ -15,7 +15,6 @@
  */
 
 #pragma once
-
 #include <fr/Imgui/Registration.h>
 
 #include <fr/Imgui/ActorWindow.h>
@@ -70,4 +69,3 @@ namespace fr::Imgui {
       fr::Imgui::TimeEstimateWindow, fr::Imgui::USAddressWindow,
       fr::Imgui::UseCaseWindow>;
 }
-

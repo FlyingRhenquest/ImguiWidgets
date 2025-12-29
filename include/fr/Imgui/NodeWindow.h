@@ -70,9 +70,6 @@ namespace fr::Imgui {
     // Node-specific buffers
     char _idText[idTextLen];
 
-    std::shared_ptr<NodeAnchor> _upAnchor;
-    std::shared_ptr<NodeAnchor> _downAnchor;
-    
     bool _initted;
     // Window and Widget Labels
     std::string _enableEditingLabel;
@@ -85,6 +82,9 @@ namespace fr::Imgui {
     }
 
   public:
+    std::shared_ptr<NodeAnchor> _upAnchor;
+    std::shared_ptr<NodeAnchor> _downAnchor;
+    
     // You can set the default editability of a node to
     // whatever you want.
     static void setDefaultEditability(bool ed) {

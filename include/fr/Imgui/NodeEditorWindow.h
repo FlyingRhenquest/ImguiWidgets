@@ -16,6 +16,7 @@
  */
 
 #pragma once
+
 #include <boost/signals2.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
@@ -23,6 +24,7 @@
 #include <format>
 #include <functional>
 #include <fr/ImguiWidgets.h>
+#include <fr/Imgui/WindowFactoryWindow.h>
 #include <fr/types/Typelist.h>
 #include <fr/types/Concepts.h>
 #include <imgui.h>
@@ -32,13 +34,19 @@
 
 namespace fr::Imgui {
 
+  template <typename WindowList>
+  requires fr::types::IsUnique<WindowList>
+  class WindowFactoryWindow;
+  
   /**
    * This is the background window for nodes. This provides
    * menu operations to create, load and save nodes. It is designed
    * to fill entirety of the ImGui native window at all times.
    *
    */
-  
+
+  template <typename WindowList>
+  requires fr::types::IsUnique<WindowList>
   class NodeEditorWindow : public GridWindow {
 
     // Iteminfo associates menu items and the function to create that window
@@ -50,6 +58,7 @@ namespace fr::Imgui {
     
     ImU32 _gridLineColor;
     float _squareSize;
+    std::shared_ptr<WindowFactoryWindow<WindowList>> _databaseFactory;
 
     /**
      * menus holds a top level menu item name and a vector
@@ -58,7 +67,6 @@ namespace fr::Imgui {
      */
     
     std::unordered_map<std::string, std::vector<std::shared_ptr<ItemInfo>>> _menus;
-
     
   public:
     using Type = NodeEditorWindow;
@@ -68,6 +76,7 @@ namespace fr::Imgui {
     boost::signals2::signal<void()> exitEvent;
 
     NodeEditorWindow(const std::string &label = "Node Editor") : Parent(label) {
+      _databaseFactory = std::make_shared<WindowFactoryWindow<WindowList>>();      
     }
 
     template <typename List>
@@ -88,9 +97,58 @@ namespace fr::Imgui {
 
     virtual ~NodeEditorWindow() {}
 
-    void Begin() override;
-
-    void begin() override;
+    void beginning() override {
+      this->add(getUniqueLabel("##DatabaseFactory"), _databaseFactory);
+      _databaseFactory->addEditorWindow(this);
+      Parent::beginning();
+    }
+    
+    void Begin() override {
+      // I always want my NodeEditorWindow behind all the other windows
+      // and I want it to always fill the entire OS Window that ImGui creates
+      // as the background window.
+      auto flags = ImGuiWindowFlags_NoBringToFrontOnFocus |
+        ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_MenuBar |
+        ImGuiWindowFlags_AlwaysVerticalScrollbar |
+        ImGuiWindowFlags_AlwaysHorizontalScrollbar;
+      ImVec2 displaySize = ImGui::GetMainViewport()->Size;
+      ImGui::SetNextWindowSize(displaySize);
+      ImGui::SetNextWindowPos(ImVec2(0, 0));
+      ImGui::Begin(_label.c_str(), nullptr, flags);
+    }    
+    
+    void begin() override {
+      Parent::begin();
+      if (ImGui::BeginMainMenuBar()) {
+      
+        // File Menu
+        
+        if (ImGui::BeginMenu("File")) {
+          if (ImGui::MenuItem("Load from Database")) {
+            _databaseFactory->setShow(true);
+          }
+          
+          if (ImGui::MenuItem("Exit")) {
+            exitEvent();
+          }
+          
+          ImGui::EndMenu();
+        }
+        
+        // Render Registration-based windows
+        for (auto [item, infoVec] : _menus) {
+          if (ImGui::BeginMenu(item.c_str())) {
+            for (auto info : infoVec) {
+              if (ImGui::MenuItem(info->name.c_str())) {
+                info->create();
+              }
+            }
+            ImGui::EndMenu();
+          }
+        }
+      }
+      ImGui::EndMainMenuBar();
+    }
     
   };
   

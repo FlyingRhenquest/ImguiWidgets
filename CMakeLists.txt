@@ -21,7 +21,6 @@ set(LINK_LIBRARIES "")
 set(LIBRARY_SOURCE
   "${CMAKE_CURRENT_SOURCE_DIR}/src/NodeWindow.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/NodeAnchor.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/NodeEditorWindow.cpp"
 )
 
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/types")
@@ -69,7 +68,12 @@ if (SDL3_FOUND)
   message("Using local SDL3")
 endif()
 
-list(APPEND LINK_LIBRARIES SDL3::SDL3)
+find_package(libpqxx CONFIG REQUIRED)
+if (libpqxx_FOUND)
+  message("Using local libpqxx")
+endif()
+
+list(APPEND LINK_LIBRARIES SDL3::SDL3 libpqxx::pqxx)
 
 #
 # If you want a backend other than vulkan, set up an

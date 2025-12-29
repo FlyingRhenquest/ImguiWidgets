@@ -95,14 +95,14 @@ namespace fr::Imgui {
     template <>
     struct Record<ProjectWindow> {
       using Type = ProjectWindow;
-      using NodeType = ProductWindow::NodeType;
+      using NodeType = ProjectWindow::NodeType;
 
       static constexpr char name[] = "Project";
       static constexpr char topMenuName[] = "Process Nodes";
 
       static constexpr void init(std::shared_ptr<Type> window) {}
 
-      static constexpr ImVec2 startingSize() { return ImVec2(300,200); }
+      static constexpr ImVec2 startingSize() { return ImVec2(300,300); }
     };
     
   }
