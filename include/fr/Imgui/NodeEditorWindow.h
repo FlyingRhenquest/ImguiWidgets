@@ -22,16 +22,19 @@
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <format>
-#include <functional>
 #include <fr/Imgui/AllWindows.h>
 #include <fr/Imgui/GridWindow.h>
 #include <fr/Imgui/WindowFactoryWindow.h>
 #include <fr/RequirementsManager/PqDatabase.h>
-#include <fr/types/Typelist.h>
 #include <fr/types/Concepts.h>
+#include <fr/types/Typelist.h>
+#include <ImGuiFileDialog.h>
+#include <fstream>
+#include <functional>
 #include <imgui.h>
-#include <string>
+#include <iostream>
 #include <memory>
+#include <string>
 #include <unordered_map>
 
 namespace fr::Imgui {
@@ -60,6 +63,10 @@ namespace fr::Imgui {
     
     ImU32 _gridLineColor;
     float _squareSize;
+    std::string _fileDialogLabel;
+    ImVec2 _fileDialogSize;
+    fr::Imgui::WindowFactory<WindowList> _factory;
+    
     std::shared_ptr<WindowFactoryWindow<WindowList>> _databaseFactory;
 
     /**
@@ -83,6 +90,9 @@ namespace fr::Imgui {
       _databaseFactory = std::make_shared<WindowFactoryWindow<WindowList>>();
       threadpool = std::make_shared<fr::RequirementsManager::ThreadPool<fr::RequirementsManager::WorkerThread>>();
       threadpool->startThreads(4);
+      _fileDialogLabel = getUniqueLabel("FileDialog");
+      _fileDialogSize.x = 600;
+      _fileDialogSize.y = 400;
     }
 
     template <typename List>
@@ -104,6 +114,7 @@ namespace fr::Imgui {
     virtual ~NodeEditorWindow() {}
 
     void beginning() override {
+      _factory.addEditorWindow(this);
       this->add(getUniqueLabel("##DatabaseFactory"), _databaseFactory);
       _databaseFactory->addEditorWindow(this);
       Parent::beginning();
@@ -133,6 +144,10 @@ namespace fr::Imgui {
           if (ImGui::MenuItem("Load from Database")) {
             _databaseFactory->setShow(true);
           }
+
+          if (ImGui::MenuItem("Load from JSON")) {
+            ImGuiFileDialog::Instance()->OpenDialog(_fileDialogLabel, "Load From JSON", ".json");
+          }
           
           if (ImGui::MenuItem("Exit")) {
             exitEvent();
@@ -154,8 +169,29 @@ namespace fr::Imgui {
         }
       }
       ImGui::EndMainMenuBar();
+
+      ImVec4 fileDialogBackground{0,0,0,255};
+      ImGui::PushStyleColor(ImGuiCol_WindowBg, fileDialogBackground);
+      if (ImGuiFileDialog::Instance()->Display(_fileDialogLabel, ImGuiWindowFlags_NoCollapse, _fileDialogSize, _fileDialogSize)) {
+        if (ImGuiFileDialog::Instance()->IsOk()) {
+          std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+          std::shared_ptr<fr::RequirementsManager::Node> node;
+          
+          std::ifstream streamIn(filePathName);
+          {
+            cereal::JSONInputArchive archive(streamIn);
+            archive(node);
+          }
+          if (node) {
+            _factory.add(node);
+          }
+        }
+        ImGuiFileDialog::Instance()->Close();
+      }
+      ImGui::PopStyleColor();
+      
     }
-    
+
   };
   
 }

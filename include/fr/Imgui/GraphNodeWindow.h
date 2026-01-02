@@ -20,6 +20,9 @@
 #include <fr/Imgui/NodeEditorWindow.h>
 #include <fr/RequirementsManager/PqDatabase.h>
 #include <fr/RequirementsManager/GraphNode.h>
+#include <fstream>
+#include <ImGuiFileDialog.h>
+#include <iostream>
 
 namespace fr::Imgui {
 
@@ -28,11 +31,15 @@ namespace fr::Imgui {
     char _titleText[titleTextLen];
     std::string _titleTextLabel;
     std::string _saveLabel;
+    std::string _jsonSaveLabel;
+    std::string _fileLabel;
+    std::string _fileDialogLabel;
+    ImVec2 _fileDialogSize;
     using WorkerThread = fr::RequirementsManager::WorkerThread;
     using ThreadPool = fr::RequirementsManager::ThreadPool<WorkerThread>;
     using SaveNodesNode = fr::RequirementsManager::SaveNodesNode<WorkerThread>;
     std::shared_ptr<SaveNodesNode> _saver;
-    std::shared_ptr<ThreadPool> _threadpool;
+    std::shared_ptr<ThreadPool> _threadpool;   
     
     void setTitleText() {
       auto node = dynamic_pointer_cast<fr::RequirementsManager::GraphNode>(_node);
@@ -53,6 +60,11 @@ namespace fr::Imgui {
       memset(_titleText, '\0', titleTextLen);
       _titleTextLabel = getUniqueLabel("##Title");
       _saveLabel = getUniqueLabel("Save to Database");
+      _jsonSaveLabel = getUniqueLabel("Save to JSON File");
+      _fileLabel = getUniqueLabel("File");
+      _fileDialogLabel = getUniqueLabel("FileDialog");
+      _fileDialogSize.x = 600;
+      _fileDialogSize.y = 400;
     }
 
     virtual ~GraphNodeWindow() {}
@@ -60,11 +72,17 @@ namespace fr::Imgui {
     void init() override {
       if (!_node) {
         _node = std::make_shared<fr::RequirementsManager::GraphNode>();
+        _node->init();
       }
       setTitleText();
       Parent::init();
     }
 
+    void Begin() override {
+      // Override Begin so we can set this window up with a menu bar.
+      ImGui::Begin(_label.c_str(), nullptr, ImGuiWindowFlags_MenuBar);      
+    }
+    
     void begin() override {
       Parent::begin();
       auto inputTextFlags = ImGuiInputTextFlags_ReadOnly;
@@ -80,34 +98,56 @@ namespace fr::Imgui {
           node->setTitle(_titleText);
         }
       }
+     
+      if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu(_fileLabel.c_str())) {
+          if (ImGui::MenuItem(_saveLabel.c_str())) {
+            // Save to Database
+            // Right now I'm just going to set all the nodes' change flags to true
+            // and kick off a save. I'll need to do a visual indicator to indicate that
+            // the save actually worked and clean this up a bit. It'd be nice to only
+            // display this button if something in the graph has actually changed.
+            _node->changed = true;
+            _node->traverse([](fr::RequirementsManager::Node::PtrType nextNode) {
+              nextNode->changed = true;
+            });
+            // If our parent is a NodeEditorWindow, get its threadpool
+            auto parentNodeEditor = std::dynamic_pointer_cast<NodeEditorWindow<AllWindowList>>(_parent);
+            if (!_threadpool && parentNodeEditor) {
+              _threadpool = parentNodeEditor->threadpool;
+            } else {
+              if (!_threadpool) {
+                _threadpool = std::make_shared<ThreadPool>();
+                _threadpool->startThreads(4);
+              }
+            }
+            if (!_saver) {
+              _saver = std::make_shared<SaveNodesNode>(_node);
+            }
+            // TODO: Set saver's complete callback up to indicate data was saved
+            _threadpool->enqueue(_saver);
+          }
+          if (ImGui::MenuItem(_jsonSaveLabel.c_str())) {
+            ImGuiFileDialog::Instance()->OpenDialog(_fileDialogLabel, "Save to JSON", ".json");
+          }
+          ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+      }
 
-      if (ImGui::Button(_saveLabel.c_str())) {
-        // Right now I'm just going to set all the nodes' change flags to true
-        // and kick off a save. I'll need to do a visual indicator to indicate that
-        // the save actually worked and clean this up a bit. It'd be nice to only
-        // display this button if something in the graph has actually changed.
-        _node->changed = true;
-        _node->traverse([](fr::RequirementsManager::Node::PtrType nextNode) {
-          nextNode->changed = true;
-        });
-        // If our parent is a NodeEditorWindow, get its threadpool
-        auto parentNodeEditor = std::dynamic_pointer_cast<NodeEditorWindow<AllWindowList>>(_parent);
-        if (!_threadpool && parentNodeEditor) {
-          _threadpool = parentNodeEditor->threadpool;
-        } else {
-          if (!_threadpool) {
-            _threadpool = std::make_shared<ThreadPool>();
-            _threadpool->startThreads(4);
+      if (ImGuiFileDialog::Instance()->Display(_fileDialogLabel, ImGuiWindowFlags_NoCollapse, _fileDialogSize, _fileDialogSize)) {
+        if (ImGuiFileDialog::Instance()->IsOk()) {
+          std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
+          std::ofstream streamOut(filePathName);
+          {
+            cereal::JSONOutputArchive archive(streamOut);
+            archive(_node);
           }
         }
-        if (!_saver) {
-          _saver = std::make_shared<SaveNodesNode>(_node);
-        }
-        // TODO: Set saver's complete callback up to indicate data was saved
-        _threadpool->enqueue(_saver);
+        ImGuiFileDialog::Instance()->Close();
       }
-    }
-    
+
+    }    
   };
 
   namespace Registration {

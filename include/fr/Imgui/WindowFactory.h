@@ -212,6 +212,7 @@ namespace fr::Imgui {
       node->traverse([&](fr::RequirementsManager::Node::PtrType node) {
         this->createWindow<WindowList>(node);
       });
+      connect();
     }
 
     // Remove a factory by UUID (for factory cleanup)

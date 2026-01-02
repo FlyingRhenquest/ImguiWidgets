@@ -10,3 +10,6 @@
 [submodule "ImGuiDatePicker"]
 	path = ImGuiDatePicker
 	url = https://github.com/DnA-IntRicate/ImGuiDatePicker.git
+[submodule "ImGuiFileDialog"]
+	path = ImGuiFileDialog
+	url = https://github.com/aiekick/ImGuiFileDialog.git

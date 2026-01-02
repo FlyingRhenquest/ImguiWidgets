@@ -76,7 +76,7 @@ int main(int, char **) {
   SDL_WindowFlags window_flags = SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |
                                  SDL_WINDOW_HIDDEN |
                                  SDL_WINDOW_HIGH_PIXEL_DENSITY;
-  SDL_Window *window = SDL_CreateWindow("Dear ImGui SDL3+OpenGL3 example",
+  SDL_Window *window = SDL_CreateWindow("Graph Editor",
                                         (int)(1280 * main_scale),
                                         (int)(800 * main_scale), window_flags);
   if (window == nullptr) {

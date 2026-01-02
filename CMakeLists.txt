@@ -42,6 +42,7 @@ set(VENDOR_SRC
   "${VENDOR_SOURCE_DIR}/imgui_demo.cpp"
   "${VENDOR_SOURCE_DIR}/misc/cpp/imgui_stdlib.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/src/ImGuiDatePickerWrapper.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ImGuiFileDialog/ImGuiFileDialog.cpp"
 )
 
 set(VENDOR_HEADERS
@@ -60,6 +61,7 @@ list(APPEND INCLUDE_DIRS
   "${VENDOR_SOURCE_DIR}/backends"
   "${VENDOR_SOURCE_DIR}/include"
   "${VENDOR_SOURCE_DIR}/misc/cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/ImGuiFileDialog"
 )
 
 message(STATUS "Checking for SDL3")
@@ -132,17 +134,19 @@ target_link_libraries(FRImguiWidgets PUBLIC
 
 add_library(FR::ImguiWidgets ALIAS FRImguiWidgets)
 
-add_executable(FRImguiDemo
+add_executable(GraphEditor
   "${VENDOR_SRC}"
   "${VENDOR_BACKEND_SRC}"
   "${FR_DEMO_SRC}"
 )
 
-target_include_directories(FRImguiDemo PRIVATE
+target_compile_options(GraphEditor PRIVATE -DUSE_STD_FILESYSTEM)
+
+target_include_directories(GraphEditor PRIVATE
   "${INCLUDE_DIRS}"
 )
 
-target_link_libraries(FRImguiDemo PRIVATE
+target_link_libraries(GraphEditor PRIVATE
   "${LINK_LIBRARIES}"
   FR::ImguiWidgets
 )
