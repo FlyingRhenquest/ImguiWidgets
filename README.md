@@ -20,25 +20,14 @@ Currently this is just a checkpoint commit into git.
    RequirementsManager Nodes are implemented.
  * NodeEditorWindow that can create the current Node Windows
    that I've implemented.
- * Initial support to load nodes from the database, but there's still
-   no way to save them from here (That should be pretty easy to implement).
-   Database can be loaded with a graph node or the python example
-   program for testing the GUI.
+ * Load/Save to database
+ * Load/Save to JSON file
  * Window placement on-load is a bit crap right now.
  * There's no way to close nodes or otherwise make them go away
    other than exiting the program.
 
-Vulkan is nominally supported in the Makefile as I wasn't sure
-if OpenGL or Vulkan was the way I wanted to go with this, but it
-looks like it's OpenGL. I'll probably clean the Vulkan stuff
-out fairly soon, since apparently the vulkan-dev Debian package
-is not what find_package is looking for.
-
 ## Goals:
 
- * Add save button to Graph Node to save to database
- * Enable export to JSON file
- * Enable load from JSON file
  * Emscripten support to run in a web brower (Will need to create a node
    REST service in RequirementsManager and communicate with websockets or
    something)
@@ -72,13 +61,21 @@ to allow editing of any editable fields. I'm leaning toward displaying
 the control and having it default to off just because I frequently
 find myself accidentally putting text in random windows.
 
-The load/save for database and eventually JSON to the GUI looks for
-Graph Nodes to load. So you should always associate a graph node
-with your data nodes to make sure you can find them again. Set the
-title to something informative.
+Load/Save both use graph nodes, so start your graph with a graph
+node ("utlity nodes" -> "graph node" on the main menu) and link one
+other node in your graph to the graph node. The graph node "File"
+menu allows saving from the database or to JSON. The main editing
+window File menu can load from the database or JSON.
 
 ## Todos
 
+ * Implement a way to close graphs without having to exit.
+ * Do something about window placement.
+ * Modify CMake instrumentation so database is optional (AND
+   pass this to RequirementsManager if I'm building it.)
+ * Add emscripten build.
+ * Add Copyright window for the GUI so I can cite the various
+   MIT/Apache licensed dependencies in the GUI.
  * Implement other views of graphs as there are several useful
    domains that will be represented in node data.
  * Python API

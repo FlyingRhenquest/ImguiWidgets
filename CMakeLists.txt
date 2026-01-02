@@ -77,29 +77,7 @@ endif()
 
 list(APPEND LINK_LIBRARIES SDL3::SDL3 libpqxx::pqxx)
 
-#
-# If you want a backend other than vulkan, set up an
-# if branch to bring in the code you need
-
-if ("${IMGUI_USE_BACKEND}" STREQUAL "VULKAN")
-  find_package(Vulkan REQUIRED)
-  
-  message(STATUS "Building with Vulkan backend")
-  set (VENDOR_BACKEND_SRC
-    "${VENDOR_SOURCE_DIR}/backends/imgui_impl_vulkan.cpp"
-    "${VENDOR_SOURCE_DIR}/backends/imgui_impl_sdl3.cpp"
-  )
-
-  set(VENDOR_MAIN
-    "${VENDOR_SOURCE_DIR}/examples/example_sdl3_vulkan/main.cpp"
-  )
-
-  set(FR_DEMO_SRC
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/vulkan/main.cpp"
-  )
-
-  list(APPEND LINK_LIBARIES "Vulkan::Vulkan")
-elseif("${IMGUI_USE_BACKEND}" STREQUAL "OPENGL")
+if("${IMGUI_USE_BACKEND}" STREQUAL "OPENGL")
   message(STATUS "Building with SDL3/Opengl backend")
   find_package(OpenGL REQUIRED)
 
