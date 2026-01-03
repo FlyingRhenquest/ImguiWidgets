@@ -18,13 +18,16 @@
 #include <fr/RequirementsManager.h>
 #include <fr/RequirementsManager/TaskNode.h>
 #include <fr/RequirementsManager/ThreadPool.h>
-#include <fr/RequirementsManager/PqNodeFactory.h>
 #include <fr/Imgui/NodeEditorWindow.h>
 #include <fr/Imgui/Registration.h>
 #include <fr/ImguiWidgets.h>
 #include <fr/types/Concepts.h>
 #include <memory>
 #include <unordered_map>
+
+#ifndef NO_SQL
+#include <fr/RequirementsManager/PqNodeFactory.h>
+#endif
 
 namespace fr::Imgui {
 
@@ -75,7 +78,9 @@ namespace fr::Imgui {
     std::unordered_map<std::string, std::shared_ptr<fr::RequirementsManager::Node>> _nodeMap;
     NodeEditorWindow<WindowList> *_editorWindow;
     std::shared_ptr<fr::RequirementsManager::ThreadPool<fr::RequirementsManager::WorkerThread>> _threadpool;
+#ifndef NO_SQL
     std::unordered_map<std::string, std::shared_ptr<fr::RequirementsManager::PqNodeFactory<fr::RequirementsManager::WorkerThread>>> _factories;
+#endif
     // Track IDs we add so we can connect them later
     std::mutex _addedIdsMutex;
     std::vector<std::string> _addedIds;
@@ -216,6 +221,7 @@ namespace fr::Imgui {
     }
 
     // Remove a factory by UUID (for factory cleanup)
+#ifndef NO_SQL
     void erase(const std::string& uuid) {
       _factories.erase(uuid);
     }
@@ -235,6 +241,7 @@ namespace fr::Imgui {
         _threadpool->enqueue(_factories[uuid]);
       }
     }
+#endif
   };
   
 }

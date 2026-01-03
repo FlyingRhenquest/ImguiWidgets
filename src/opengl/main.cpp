@@ -22,15 +22,25 @@
 #endif
 
 #ifdef __EMSCRIPTEN__
-#include "../libs/emscripten/emscripten_mainloop_stub.h"
+#include "emscripten_mainloop_stub.h"
+#include <emscripten/emscripten.h>
+#include <emscripten/html5.h>
 #endif
 
 // Main code
 int main(int, char **) {
+
+#ifdef __EMSCRIPTEN__
+    EmscriptenWebGLContextAttributes attr;
+    emscripten_webgl_init_context_attributes(&attr);
+    EMSCRIPTEN_WEBGL_CONTEXT_HANDLE ctx = emscripten_webgl_create_context("#canvas", &attr);
+    emscripten_webgl_make_context_current(ctx);
+#endif
+  
   // Setup SDL
   // [If using SDL_MAIN_USE_CALLBACKS: all code below until the main loop starts
   // would likely be your SDL_AppInit() function]
-  if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD)) {
+  if (!SDL_Init(SDL_INIT_VIDEO)) {
     printf("Error: SDL_Init(): %s\n", SDL_GetError());
     return 1;
   }

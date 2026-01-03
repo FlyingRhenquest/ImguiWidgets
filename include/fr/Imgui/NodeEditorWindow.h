@@ -24,11 +24,9 @@
 #include <format>
 #include <fr/Imgui/AllWindows.h>
 #include <fr/Imgui/GridWindow.h>
-#include <fr/Imgui/WindowFactoryWindow.h>
-#include <fr/RequirementsManager/PqDatabase.h>
+#include <fr/Imgui/WindowFactory.h>
 #include <fr/types/Concepts.h>
 #include <fr/types/Typelist.h>
-#include <ImGuiFileDialog.h>
 #include <fstream>
 #include <functional>
 #include <imgui.h>
@@ -37,11 +35,23 @@
 #include <string>
 #include <unordered_map>
 
+// Optional includes
+#ifndef NO_SQL
+#include <fr/RequirementsManager/PqDatabase.h>
+#include <fr/Imgui/WindowFactoryWindow.h>
+#endif
+
+#ifndef NO_LOAD_SAVE_JSON
+#include <ImGuiFileDialog.h>
+#endif
+
 namespace fr::Imgui {
 
+#ifndef NO_SQL
   template <typename WindowList>
   requires fr::types::IsUnique<WindowList>
   class WindowFactoryWindow;
+#endif
   
   /**
    * This is the background window for nodes. This provides
@@ -66,8 +76,10 @@ namespace fr::Imgui {
     std::string _fileDialogLabel;
     ImVec2 _fileDialogSize;
     fr::Imgui::WindowFactory<WindowList> _factory;
-    
+
+#ifndef NO_SQL    
     std::shared_ptr<WindowFactoryWindow<WindowList>> _databaseFactory;
+#endif
 
     /**
      * menus holds a top level menu item name and a vector
@@ -87,9 +99,11 @@ namespace fr::Imgui {
     std::shared_ptr<fr::RequirementsManager::ThreadPool<fr::RequirementsManager::WorkerThread>> threadpool;
 
     NodeEditorWindow(const std::string &label = "Node Editor") : Parent(label) {
+#ifndef NO_SQL      
       _databaseFactory = std::make_shared<WindowFactoryWindow<WindowList>>();
       threadpool = std::make_shared<fr::RequirementsManager::ThreadPool<fr::RequirementsManager::WorkerThread>>();
-      threadpool->startThreads(4);
+      threadpool->startThreads(DEFAULT_THREADPOOL_SIZE);
+#endif      
       _fileDialogLabel = getUniqueLabel("FileDialog");
       _fileDialogSize.x = 600;
       _fileDialogSize.y = 400;
@@ -115,8 +129,10 @@ namespace fr::Imgui {
 
     void beginning() override {
       _factory.addEditorWindow(this);
+#ifndef NO_SQL
       this->add(getUniqueLabel("##DatabaseFactory"), _databaseFactory);
       _databaseFactory->addEditorWindow(this);
+#endif
       Parent::beginning();
     }
     
@@ -141,14 +157,16 @@ namespace fr::Imgui {
         // File Menu
         
         if (ImGui::BeginMenu("File")) {
+#ifndef NO_SQL
           if (ImGui::MenuItem("Load from Database")) {
             _databaseFactory->setShow(true);
           }
-
+#endif
+#ifndef NO_LOAD_SAVE_JSON          
           if (ImGui::MenuItem("Load from JSON")) {
             ImGuiFileDialog::Instance()->OpenDialog(_fileDialogLabel, "Load From JSON", ".json");
           }
-          
+#endif
           if (ImGui::MenuItem("Exit")) {
             exitEvent();
           }
@@ -170,6 +188,7 @@ namespace fr::Imgui {
       }
       ImGui::EndMainMenuBar();
 
+#ifndef NO_LOAD_SAVE_JSON      
       ImVec4 fileDialogBackground{0,0,0,255};
       ImGui::PushStyleColor(ImGuiCol_WindowBg, fileDialogBackground);
       if (ImGuiFileDialog::Instance()->Display(_fileDialogLabel, ImGuiWindowFlags_NoCollapse, _fileDialogSize, _fileDialogSize)) {
@@ -189,6 +208,7 @@ namespace fr::Imgui {
         ImGuiFileDialog::Instance()->Close();
       }
       ImGui::PopStyleColor();
+#endif
       
     }
 

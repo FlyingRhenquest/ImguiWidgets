@@ -18,11 +18,17 @@
 
 #include <fr/Imgui/NodeWindow.h>
 #include <fr/Imgui/NodeEditorWindow.h>
-#include <fr/RequirementsManager/PqDatabase.h>
 #include <fr/RequirementsManager/GraphNode.h>
 #include <fstream>
-#include <ImGuiFileDialog.h>
 #include <iostream>
+
+#ifndef NO_SQL
+#include <fr/RequirementsManager/PqDatabase.h>
+#endif
+
+#ifndef NO_JSON_LOAD_SAVE
+#include <ImGuiFileDialog.h>
+#endif
 
 namespace fr::Imgui {
 
@@ -37,8 +43,11 @@ namespace fr::Imgui {
     ImVec2 _fileDialogSize;
     using WorkerThread = fr::RequirementsManager::WorkerThread;
     using ThreadPool = fr::RequirementsManager::ThreadPool<WorkerThread>;
+#ifndef NO_SQL
     using SaveNodesNode = fr::RequirementsManager::SaveNodesNode<WorkerThread>;
+
     std::shared_ptr<SaveNodesNode> _saver;
+#endif
     std::shared_ptr<ThreadPool> _threadpool;   
     
     void setTitleText() {
@@ -101,6 +110,7 @@ namespace fr::Imgui {
      
       if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu(_fileLabel.c_str())) {
+#ifndef NO_SQL
           if (ImGui::MenuItem(_saveLabel.c_str())) {
             // Save to Database
             // Right now I'm just going to set all the nodes' change flags to true
@@ -127,14 +137,18 @@ namespace fr::Imgui {
             // TODO: Set saver's complete callback up to indicate data was saved
             _threadpool->enqueue(_saver);
           }
+#endif
+#ifndef NO_LOAD_SAVE_JSON
           if (ImGui::MenuItem(_jsonSaveLabel.c_str())) {
             ImGuiFileDialog::Instance()->OpenDialog(_fileDialogLabel, "Save to JSON", ".json");
           }
+#endif
           ImGui::EndMenu();
         }
         ImGui::EndMenuBar();
       }
 
+#ifndef NO_LOAD_SAVE_JSON      
       if (ImGuiFileDialog::Instance()->Display(_fileDialogLabel, ImGuiWindowFlags_NoCollapse, _fileDialogSize, _fileDialogSize)) {
         if (ImGuiFileDialog::Instance()->IsOk()) {
           std::string filePathName = ImGuiFileDialog::Instance()->GetFilePathName();
@@ -146,6 +160,7 @@ namespace fr::Imgui {
         }
         ImGuiFileDialog::Instance()->Close();
       }
+#endif
 
     }    
   };
