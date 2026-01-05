@@ -24,7 +24,7 @@ Currently this is just a checkpoint commit into git.
    that I've implemented.
  * Load/Save to database
  * Load/Save to JSON file
- * Load from REST (Currently Emscripten-only)
+ * Load from REST
  * Window placement on-load is a bit crap right now.
  * There's no way to close nodes or otherwise make them go away
    other than exiting the program.
@@ -37,8 +37,8 @@ Currently this is just a checkpoint commit into git.
  * Provide load/save support
    ** To SQL database - Done. This will always be native build only.
    ** Export to JSON - Done for Native build (May do emscripten too.)
-   ** Load/Save to REST - Load works in emscripten, still have to
-      implement for native build and implement POST support in the GUI.
+   ** Load/Save to REST - Load works in emscripten and natively.
+      Still need to implement a POST to save back to the server.
  * Native and emscripten builds (Done)
  * Learn more about Imgui (Done :-)
  * Demonstrate a non-trivial full-stack application written entirely
