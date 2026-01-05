@@ -16,23 +16,34 @@ Currently this is just a checkpoint commit into git.
 
 ## Whats here RIGHT NOW
 
+ * Emscripten support to build and run this in your browser.
+   See the Emscripten notes in the docs directory.
  * Widgets to support editing RequirementsManager Nodes. All current
    RequirementsManager Nodes are implemented.
  * NodeEditorWindow that can create the current Node Windows
    that I've implemented.
  * Load/Save to database
  * Load/Save to JSON file
+ * Load from REST (Currently Emscripten-only)
  * Window placement on-load is a bit crap right now.
  * There's no way to close nodes or otherwise make them go away
    other than exiting the program.
 
 ## Goals:
 
- * Emscripten support to run in a web brower (Will need to create a node
-   REST service in RequirementsManager and communicate with websockets or
-   something)
  * Provide different views that graphs with specific data can
    be loaded in to (time sequence, notebook, et al.)
+ * Provide a GUI for graph editing (Mostly done)
+ * Provide load/save support
+   ** To SQL database - Done. This will always be native build only.
+   ** Export to JSON - Done for Native build (May do emscripten too.)
+   ** Load/Save to REST - Load works in emscripten, still have to
+      implement for native build and implement POST support in the GUI.
+ * Native and emscripten builds (Done)
+ * Learn more about Imgui (Done :-)
+ * Demonstrate a non-trivial full-stack application written entirely
+   in C++ that runs and looks the same both natively and in a web
+   browser (Done)
 
 ## Notes:
 
@@ -69,14 +80,16 @@ window File menu can load from the database or JSON.
 
 ## Todos
 
+ * Docker images of the entire system so you can play with it
+   without having to build it.
+ * SSL Support via ngnix port forwarding (in the docker images)
+ * Keycloak authentication support (in the docker images)
+ * Have ngnix also serve the webasm binaries (in the docker images)
+ * Do something about Window placement.
  * Implement a way to close graphs without having to exit.
  * Do something about window placement.
- * Modify CMake instrumentation so database is optional (AND
-   pass this to RequirementsManager if I'm building it.)
- * Add emscripten build.
  * Add Copyright window for the GUI so I can cite the various
    MIT/Apache licensed dependencies in the GUI.
  * Implement other views of graphs as there are several useful
    domains that will be represented in node data.
  * Python API
- * Emcripten API
