@@ -70,16 +70,15 @@ namespace fr::Imgui {
     }
 
     void begin() override {
-      Window::begin();
+      Parent::begin();
 
-      drawGrid();
-        
+      drawGrid();        
     }
 
     void end() override {
-      Window::end();
+      Parent::end();
     }
-    
+
   };
   
 }

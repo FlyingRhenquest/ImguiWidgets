@@ -220,6 +220,15 @@ namespace fr::Imgui {
       connect();
     }
 
+#ifdef NO_SQL
+    void erase(const std::string& uuid) {
+      // NOTUSED
+      // TODO: Meditate on the design of this object, since I want to use it
+      //       with emscripten and natively. Maybe I need to consolidate my
+      //       factories.
+    }
+#endif
+    
     // Remove a factory by UUID (for factory cleanup)
 #ifndef NO_SQL
     void erase(const std::string& uuid) {
@@ -235,6 +244,12 @@ namespace fr::Imgui {
         _factories[uuid]->done.connect([&](const std::string& uuid){
           connect();
           // Enqueue a cleaner to run once this signal handler returns
+
+          // TODO: If this runs before the callback returns, this can cause a crash.
+          // See if I can synchronize it to run from on notificaton from elsewhere,
+          // put the task in a vector to be enqueued at a later date or work on the
+          // design of the WindowFactory so this is safe..er.
+          
           //  auto cleaner = std::make_shared<CleanupFactory<WindowList,fr::RequirementsManager::WorkerThread>>(this, uuid);
           // _threadpool->enqueue(cleaner);
         });

@@ -13,7 +13,10 @@ find_package(PkgConfig)
 option(IMGUI_USE_BACKEND "OPENGL")
 option(BUILD_PQXX_SUPPORT "Build PostgreSQL database support" ON)
 option(BUILD_LOAD_SAVE_JSON "Enable loading and saving JSON files" ON)
-OPTION(DEFAULT_THREADPOOL_SIZE "Number of threads to start when threadpools are created" 4)
+
+if (NOT DEFAULT_THREADPOOL_SIZE)
+  set(DEFAULT_THREADPOOL_SIZE 4)
+endif()
 
 if (NOT IMGUI_USE_BACKEND)
   set(IMGUI_USE_BACKEND "OPENGL")
@@ -80,12 +83,13 @@ list(APPEND INCLUDE_DIRS
 
 ## OK Let's see what we're building here...
 
+list(APPEND COMPILER_OPTIONS "-DDEFAULT_THREADPOOL_SIZE=${DEFAULT_THREADPOOL_SIZE}")
+
 # Check our options
 if (EMSCRIPTEN)
   set(BUILD_LOAD_SAVE_JSON OFF)
   set(BUILD_PQXX_SUPPORT OFF)
-  set(DEFAULT_THREADPOOL_SIZE 2)
-  list(APPEND COMPILER_OPTIONS "-DDEFAULT_THREADPOOL_SIZE=${DEFAULT_THREADPOOL_SIZE}" "-DIMGUI_DISABLE_FILE_FUNCTIONS")
+  list(APPEND COMPILER_OPTIONS "-DIMGUI_DISABLE_FILE_FUNCTIONS")
   list(APPEND INCLUDE_DIRS "${VENDOR_SOURCE_DIR}/examples/libs/emscripten")
 
   find_package(Threads REQUIRED)
@@ -93,10 +97,11 @@ if (EMSCRIPTEN)
 
   set(CMAKE_EXECUTABLE_SUFFIX ".html")
   list(APPEND COMPILER_OPTIONS
+    #    "-fwasm-exceptions"
     "-pthread"
     "-sUSE_PTHREADS=1"
-    "-sDISABLE_EXCEPTION_CATCHING=1"
     "-sNO_EXIT_RUNTIME=0"
+    "-O2"
     "-sASSERTIONS=1"
     "-sNO_FILESYSTEM=1"
     "-sPROXY_TO_PTHREAD=1"
@@ -104,7 +109,7 @@ if (EMSCRIPTEN)
     "-sALLOW_MEMORY_GROWTH=1"
     "-sUSE_WEBGL2=1"
     "-sFULL_ES3=1"
-    "-Wno-unused-command-line-argument"
+    "-Wno-deprecated-declarations"
     "-DNO_LOAD_SAVE_JSON"
     "-DNO_SQL"
   )
@@ -205,6 +210,15 @@ add_executable(GraphEditor
 target_include_directories(GraphEditor PUBLIC
   "${INCLUDE_DIRS}"
 )
+
+if (EMSCRIPTEN)
+  target_link_options(GraphEditor PUBLIC "-sFETCH=1" "-fwasm-exceptions")
+endif()
+
+if (NOT EMSCRIPTEN)
+  target_compile_options(FRImguiWidgets PUBLIC ${COMPILER_OPTIONS})
+  target_compile_options(GraphEditor PUBLIC ${COMPILER_OPTIONS})
+endif()
 
 message(STATUS "INCLUDE DIRS: ${INCLUDE_DIRS}")
 

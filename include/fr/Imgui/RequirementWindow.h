@@ -60,11 +60,6 @@ namespace fr::Imgui {
     void beginning() override {
       auto node = dynamic_pointer_cast<NodeType>(_node);
       if (node) {
-        std::cout << "Requirement loading" << std::endl;
-        std::cout << "ID: " << node->idString() << std::endl;
-        std::cout << "Title: " << node->getTitle() << std::endl;
-        std::cout << "Text: " << node->getText() << std::endl;
-        std::cout << "Functional: " << node->isFunctional() << std::endl;
         strncpy(_titleText, node->getTitle().c_str(), titleLen - 1);
         _text = node->getText();
         _functional = node->isFunctional();

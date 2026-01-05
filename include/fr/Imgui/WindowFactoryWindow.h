@@ -46,18 +46,16 @@ namespace fr::Imgui {
     std::string _uuidColumn;
     std::string _titleColumn;
     std::string _load;
-    int _selectedRow;
   public:
     using Parent = Window;
     using Type = WindowFactoryWindow;
     using PtrType = std::shared_ptr<Type>;    
     
-    WindowFactoryWindow(const std::string &label = "Load Graph") : Parent(label), _show(false), _displayWindow(false) {
+    WindowFactoryWindow(const std::string& label = "Load Graph") : Parent(label), _show(false), _displayWindow(false) {
       _tableName = getUniqueLabel("##LoadGraphTable");
       _uuidColumn = getUniqueLabel("UUID");
       _titleColumn = getUniqueLabel("Title");
       _load = getUniqueLabel("Load");
-      _selectedRow = 0;
     }
     virtual ~WindowFactoryWindow() {}
 
@@ -93,7 +91,6 @@ namespace fr::Imgui {
           ImGui::TableSetupColumn(_titleColumn.c_str());
           ImGui::TableHeadersRow();
           
-          int row = 0;
           // Each node in locator.nodes is a row
           for(auto [uuid,title] : _locator.nodes) {
             ImGui::TableNextRow();

@@ -24,6 +24,7 @@
 #include <format>
 #include <fr/Imgui/AllWindows.h>
 #include <fr/Imgui/GridWindow.h>
+#include <fr/Imgui/RestLocator.h>
 #include <fr/Imgui/WindowFactory.h>
 #include <fr/types/Concepts.h>
 #include <fr/types/Typelist.h>
@@ -76,6 +77,7 @@ namespace fr::Imgui {
     std::string _fileDialogLabel;
     ImVec2 _fileDialogSize;
     fr::Imgui::WindowFactory<WindowList> _factory;
+    std::shared_ptr<RestLocator<WindowList>> _restWindow;
 
 #ifndef NO_SQL    
     std::shared_ptr<WindowFactoryWindow<WindowList>> _databaseFactory;
@@ -103,7 +105,8 @@ namespace fr::Imgui {
       _databaseFactory = std::make_shared<WindowFactoryWindow<WindowList>>();
       threadpool = std::make_shared<fr::RequirementsManager::ThreadPool<fr::RequirementsManager::WorkerThread>>();
       threadpool->startThreads(DEFAULT_THREADPOOL_SIZE);
-#endif      
+#endif
+      _restWindow = std::make_shared<RestLocator<WindowList>>();
       _fileDialogLabel = getUniqueLabel("FileDialog");
       _fileDialogSize.x = 600;
       _fileDialogSize.y = 400;
@@ -129,6 +132,8 @@ namespace fr::Imgui {
 
     void beginning() override {
       _factory.addEditorWindow(this);
+      _restWindow->addEditorWindow(this);
+      this->add(getUniqueLabel("##RestWindow"), _restWindow);
 #ifndef NO_SQL
       this->add(getUniqueLabel("##DatabaseFactory"), _databaseFactory);
       _databaseFactory->addEditorWindow(this);
@@ -167,6 +172,9 @@ namespace fr::Imgui {
             ImGuiFileDialog::Instance()->OpenDialog(_fileDialogLabel, "Load From JSON", ".json");
           }
 #endif
+          if (ImGui::MenuItem("Query REST Service")) {
+            _restWindow->setShow(true);
+          }
           if (ImGui::MenuItem("Exit")) {
             exitEvent();
           }
@@ -209,7 +217,6 @@ namespace fr::Imgui {
       }
       ImGui::PopStyleColor();
 #endif
-      
     }
 
   };
