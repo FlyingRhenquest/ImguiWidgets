@@ -139,6 +139,10 @@ if (NOT EMSCRIPTEN)
     message("Using local SDL3")
     list(APPEND LINK_LIBRARIES SDL3::SDL3)
   endif()
+
+  message(STATUS "Checking for pistache")
+  pkg_check_modules(Pistache REQUIRED IMPORTED_TARGET libpistache)
+  list(APPEND LINK_LIBRARIES PkgConfig::Pistache)
 endif()
 
 if (EMSCRIPTEN OR NOT SDL3_FOUND)

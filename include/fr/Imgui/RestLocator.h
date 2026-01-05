@@ -28,6 +28,10 @@
 #include <fr/RequirementsManager/EmscriptenRestFactory.h>
 #endif
 
+#ifndef __EMSCRIPTEN__
+#include <fr/RequirementsManager/PistacheRestFactory.h>
+#endif
+
 namespace fr::Imgui {
 
   /**
@@ -36,8 +40,6 @@ namespace fr::Imgui {
    * it has available. It displays those nodes and allows you to
    * select ones to load into the editor.
    *
-   * TODO: Currently I only have emscripten objects to query REST.
-   *       Build a native one using libcurl or something.
    * TODO: Implement a "save" button for REST in GraphNodeWindow.
    *       The server already supports this.
    */
@@ -64,8 +66,8 @@ namespace fr::Imgui {
 
 #ifndef __EMSCRIPTEN__
     // Define currently null objects that exist but don't do anything
-    fr::RequirementsManager::ServerLocatorNodeFactory _locatorFactory;
-    fr::RequirementsManager::GraphNodeFactory _graphFactory;
+    fr::RequirementsManager::PistacheLocatorNodeFactory _locatorFactory;
+    fr::RequirementsManager::PistacheGraphNodeFactory _graphFactory;
 #endif    
     
     // Track subscriptions so we can unsubscribe from factories if we ever need to.
@@ -161,6 +163,7 @@ namespace fr::Imgui {
       // (non-emscripten builds, currently)
       _noFactoriesLabel = "This object doesn't have working factories and will not actually load graphs.";
       subscribe();
+      setStartingSize(350,400);
     }
 
     virtual ~RestLocator() {
@@ -210,13 +213,6 @@ namespace fr::Imgui {
           _graphs.clear();
           _locatorFactory.fetch(_url);
         }
-#ifndef __EMSCRIPTEN__
-        if (ImGui::IsItemHovered()) {
-          ImGui::BeginTooltip();
-          ImGui::Text(_noFactoriesLabel.c_str());
-          ImGui::EndTooltip();
-        }
-#endif
         
         if (ImGui::BeginTable(_tableLabel.c_str(), 3)) {
           ImGui::TableSetupColumn(_loadColumn.c_str());

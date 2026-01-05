@@ -57,7 +57,7 @@ namespace fr::Imgui {
   /**
    * This is the background window for nodes. This provides
    * menu operations to create, load and save nodes. It is designed
-   * to fill entirety of the ImGui native window at all times.
+   * to fill the entirety of the ImGui native window at all times.
    *
    */
 
