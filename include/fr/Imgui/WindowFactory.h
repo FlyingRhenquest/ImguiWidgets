@@ -16,6 +16,7 @@
 
 #pragma once
 #include <fr/RequirementsManager.h>
+#include <fr/RequirementsManager/RestFactoryApi.h>
 #include <fr/RequirementsManager/TaskNode.h>
 #include <fr/RequirementsManager/ThreadPool.h>
 #include <fr/Imgui/NodeEditorWindow.h>
@@ -77,6 +78,7 @@ namespace fr::Imgui {
     // Map of node IDs in the graph
     std::unordered_map<std::string, std::shared_ptr<fr::RequirementsManager::Node>> _nodeMap;
     NodeEditorWindow<WindowList> *_editorWindow;
+    fr::RequirementsManager::GraphNodeFactory *_restNodeFactory;
     std::shared_ptr<fr::RequirementsManager::ThreadPool<fr::RequirementsManager::WorkerThread>> _threadpool;
 #ifndef NO_SQL
     std::unordered_map<std::string, std::shared_ptr<fr::RequirementsManager::PqNodeFactory<fr::RequirementsManager::WorkerThread>>> _factories;
@@ -184,6 +186,11 @@ namespace fr::Imgui {
           window->addNode(node);
           window->init();
           add(node->idString(), window);
+          // If this is a Graph Window, add our REST factory to it so it can
+          // save to REST
+          if constexpr (std::is_same_v<WindowNodeType, GraphNodeWindow>) {
+            window->setFactory(_restNodeFactory);
+          }
         } else {
           if constexpr (!std::is_void_v<typename Windows::tail::head::type>) {
             this->createWindow<typename Windows::tail>(node);
@@ -194,7 +201,7 @@ namespace fr::Imgui {
     
   public:
 
-    WindowFactory() : _editorWindow(nullptr) {
+    WindowFactory() : _editorWindow(nullptr), _restNodeFactory(nullptr) {
       _threadpool = std::make_shared<fr::RequirementsManager::ThreadPool<fr::RequirementsManager::WorkerThread>>();
       _threadpool->startThreads(4);
     }
@@ -209,11 +216,16 @@ namespace fr::Imgui {
       _editorWindow = editor;
     }
 
+    void addNodeFactory(fr::RequirementsManager::GraphNodeFactory *factory) {
+      _restNodeFactory = factory;
+    }
+
     // Add a graph to the factory. WindowList is a list of supported windows.
     // This function will read the registration records and try to find the
     // correct window to create based on the NodeType in the registration
     // record.
     void add(std::shared_ptr<fr::RequirementsManager::Node> node) {
+      // If this is a graph window, set its rest node factory
       node->traverse([&](fr::RequirementsManager::Node::PtrType node) {
         this->createWindow<WindowList>(node);
       });

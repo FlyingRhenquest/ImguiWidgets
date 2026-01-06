@@ -50,6 +50,7 @@ namespace fr::Imgui {
     void init() override {
       if (!_node) {
         _node = std::make_shared<fr::RequirementsManager::Organization>();
+        _node->init();
       }
       setName();
       Parent::init();

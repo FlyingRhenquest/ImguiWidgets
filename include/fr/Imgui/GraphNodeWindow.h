@@ -21,6 +21,7 @@
 #include <fr/RequirementsManager/GraphNode.h>
 #include <fstream>
 #include <iostream>
+#include <type_traits>
 
 #ifndef NO_SQL
 #include <fr/RequirementsManager/PqDatabase.h>
@@ -34,13 +35,26 @@ namespace fr::Imgui {
 
   class GraphNodeWindow : public NodeWindow {
     static const size_t titleTextLen = 201;
+    static const size_t urlLen = 301;
     char _titleText[titleTextLen];
+    char _url[urlLen];
     std::string _titleTextLabel;
     std::string _saveLabel;
     std::string _jsonSaveLabel;
     std::string _fileLabel;
     std::string _fileDialogLabel;
+    std::string _restSaveLabel;
+    std::string _restSaveWindowLabel;
+    std::string _saveTextBoxLabel;
+    std::string _restSaveButtonLabel;
+    bool _display;
+    bool _showPopup;
+    
     ImVec2 _fileDialogSize;
+    // GraphNodeFactory raw pointer -- I don't own this and can
+    // be sure it will exist for the duration of the application.
+    // I use this to POST the graph to REST, if it's not null.
+    fr::RequirementsManager::GraphNodeFactory *_factory;
     using WorkerThread = fr::RequirementsManager::WorkerThread;
     using ThreadPool = fr::RequirementsManager::ThreadPool<WorkerThread>;
 #ifndef NO_SQL
@@ -65,19 +79,32 @@ namespace fr::Imgui {
     using NodeType = fr::RequirementsManager::GraphNode;
 
     GraphNodeWindow(std::string title = "GraphNode")
-      : Parent(title) {
+      : Parent(title),
+        _factory(nullptr)
+    {
       memset(_titleText, '\0', titleTextLen);
+      memset(_url, '\0', urlLen);
       _titleTextLabel = getUniqueLabel("##Title");
       _saveLabel = getUniqueLabel("Save to Database");
       _jsonSaveLabel = getUniqueLabel("Save to JSON File");
       _fileLabel = getUniqueLabel("File");
       _fileDialogLabel = getUniqueLabel("FileDialog");
+      _restSaveLabel = getUniqueLabel("Save to REST Service");
+      _restSaveWindowLabel = getUniqueLabel("Save to REST");
+      _saveTextBoxLabel = getUniqueLabel("##URL");
+      _restSaveButtonLabel = getUniqueLabel("Save");
       _fileDialogSize.x = 600;
       _fileDialogSize.y = 400;
+      _showPopup = false;
+      _display = false;
     }
 
     virtual ~GraphNodeWindow() {}
 
+    void setFactory(fr::RequirementsManager::GraphNodeFactory* factory) {
+      _factory = factory;
+    }
+    
     void init() override {
       if (!_node) {
         _node = std::make_shared<fr::RequirementsManager::GraphNode>();
@@ -143,6 +170,11 @@ namespace fr::Imgui {
             ImGuiFileDialog::Instance()->OpenDialog(_fileDialogLabel, "Save to JSON", ".json");
           }
 #endif
+          if (_factory) {
+            if (ImGui::MenuItem(_restSaveLabel.c_str())) {
+              _display = true;
+            }
+          }
           ImGui::EndMenu();
         }
         ImGui::EndMenuBar();
@@ -159,10 +191,25 @@ namespace fr::Imgui {
           }
         }
         ImGuiFileDialog::Instance()->Close();
-      }
+      }      
 #endif
 
-    }    
+      if (_display) {
+        _showPopup = true;
+        ImGui::Begin(_restSaveWindowLabel.c_str(), &_showPopup, ImGuiWindowFlags_AlwaysAutoResize);
+          
+        ImGui::Text("URL: ");
+        ImGui::SameLine();
+        ImGui::InputText(_saveTextBoxLabel.c_str(), _url, urlLen - 1);
+        if (ImGui::Button(_restSaveButtonLabel.c_str())) {
+          _factory->post(_url, _node);
+          _display = false;
+        }
+        ImGui::End();
+        _showPopup = false;
+      }
+
+    }
   };
 
   namespace Registration {

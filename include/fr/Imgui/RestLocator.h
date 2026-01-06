@@ -176,6 +176,7 @@ namespace fr::Imgui {
     // can add the windows it creates to NodeEditorWindow.
     void addEditorWindow(NodeEditorWindow<WindowList> *editor) {
       _windowFactory->addEditorWindow(editor);
+      _windowFactory->addNodeFactory(&_graphFactory);
     }
 
     // Enables displaying/closing this window
