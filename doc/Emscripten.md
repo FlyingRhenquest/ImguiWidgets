@@ -48,9 +48,9 @@ postgresql-client and postgresql-common-dev, and built libpqxx to
 
 ## Boost
 
-Any fairly recent version should work. I mostly just use signals2 from
-boost, but that has like 12 dependencies in boost. The emscripten build
-downloads what it needs and builds it during the build process.
+Any fairly recent version should work. I mostly just use uuid from
+boost, The emscripten build downloads what it needs and builds it
+during the build process.
 
 ## Cereal
 

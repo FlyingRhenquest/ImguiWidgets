@@ -16,7 +16,6 @@
 
 #pragma once
 
-#include <boost/signals2.hpp>
 #include <imgui.h>
 #include <fr/Imgui/WidgetApi.h>
 #include <fr/Imgui/Window.h>

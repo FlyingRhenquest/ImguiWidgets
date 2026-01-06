@@ -67,7 +67,7 @@ void NodeWindow::init() {
         _downAnchor->setCenter(screenCoordinate(downListCenter));
       });
 
-  _subscriptions.push_back(sub);
+  _subscriptions.push_back(std::move(sub));
 
   _initted = true;
 }

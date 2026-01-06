@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <fteng/signals.hpp>
 #include <format>
 #include <fr/Imgui/NodeAnchor.h>
 #include <fr/Imgui/Window.h>
@@ -66,6 +67,8 @@ namespace fr::Imgui {
     bool _displayEditable;
     // Debug button prints _node.to_json() to console
     bool _displayDebugButton;
+    // Subscriptions to events
+    std::vector<fteng::connection> _subscriptions;
 
     // Node-specific buffers
     char _idText[idTextLen];

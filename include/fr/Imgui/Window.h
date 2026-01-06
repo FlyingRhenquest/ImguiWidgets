@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <boost/signals2.hpp>
+#include <fteng/signals.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -59,8 +59,6 @@ namespace fr::Imgui {
     // Window's begin has been called the first time
     // This is use to set up initialization stuff for imgui
     bool _started;
-    // Subscriptions to events
-    std::vector<boost::signals2::connection> _subscriptions;
 
     void setParent(Window::PtrType p) {
       _parent = p;
@@ -79,13 +77,13 @@ namespace fr::Imgui {
     
   public:
 
-    // Export events as boost::signals2 signals
+    // Export events as fteng signals
 
     // Window resized events (if _currentSize != _startingSize)
     // Params are this window and the new size
-    boost::signals2::signal<void(Window::PtrType, ImVec2)> resized;
+    fteng::signal<void(Window::PtrType, ImVec2)> resized;
     // Window moved event
-    boost::signals2::signal<void(Window::PtrType, ImVec2)> moved;
+    fteng::signal<void(Window::PtrType, ImVec2)> moved;
 
     Window(const std::string& label) : _label(getUniqueLabel(label)),
                                        _lastMin(0,0),
@@ -96,15 +94,6 @@ namespace fr::Imgui {
     }
 
     virtual ~Window() {
-      unsubscribe();
-    }
-
-    // Unsubscribe from all subscriptions
-    void unsubscribe() {
-      for (auto subscription : _subscriptions) {
-        subscription.disconnect();        
-      }
-      _subscriptions.clear();
     }
 
     // Add a child window. Key is just some string you can

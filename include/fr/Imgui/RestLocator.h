@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <boost/signals2.hpp>
+#include <fteng/signals.hpp>
 #include <fr/RequirementsManager/RestFactoryApi.h>
 #include <fr/Imgui/AllWindows.h>
 #include <fr/Imgui/Window.h>
@@ -71,7 +71,7 @@ namespace fr::Imgui {
 #endif    
     
     // Track subscriptions so we can unsubscribe from factories if we ever need to.
-    std::vector<boost::signals2::connection> _subscriptions;
+    std::vector<fteng::connection> _subscriptions;
     // Window factory used to create windows
     std::shared_ptr<WindowFactory<WindowList>> _windowFactory;
 
@@ -124,16 +124,14 @@ namespace fr::Imgui {
         _graphFactory.error.connect([](const std::string& message) {
           std::cout << "Graph error: " << message << std::endl;
         });
-      _subscriptions.push_back(locatorAvailableSub);
-      _subscriptions.push_back(displayGraphSub);
-      _subscriptions.push_back(locatorFailSub);
-      _subscriptions.push_back(graphFailSub);
+      _subscriptions.push_back(std::move(locatorAvailableSub));
+      _subscriptions.push_back(std::move(displayGraphSub));
+      _subscriptions.push_back(std::move(locatorFailSub));
+      _subscriptions.push_back(std::move(graphFailSub));
     }
 
     void unsubscribe() {
-      for(auto subscription : _subscriptions) {
-        subscription.disconnect();
-      }
+      // Destroying the connections automatically unsubscribes from them
       _subscriptions.clear();
     }
 

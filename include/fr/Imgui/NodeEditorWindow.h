@@ -17,7 +17,7 @@
 
 #pragma once
 
-#include <boost/signals2.hpp>
+#include <fteng/signals.hpp>
 #include <boost/uuid/uuid.hpp>
 #include <boost/uuid/uuid_generators.hpp>
 #include <boost/uuid/uuid_io.hpp>
@@ -96,7 +96,7 @@ namespace fr::Imgui {
     using PtrType = std::shared_ptr<Type>;
     using Parent = GridWindow;
 
-    boost::signals2::signal<void()> exitEvent;
+    fteng::signal<void()> exitEvent;
 
     std::shared_ptr<fr::RequirementsManager::ThreadPool<fr::RequirementsManager::WorkerThread>> threadpool;
 

@@ -16,6 +16,7 @@
 
 #pragma once
 
+#include <fteng/signals.hpp>
 #include <fr/Imgui/NodeWindow.h>
 #include <format>
 
@@ -27,6 +28,7 @@ namespace fr::Imgui {
    */
 
   class CommitableNodeWindow : public NodeWindow {
+    std::vector<fteng::connection> _subscriptions;
   public:
     using Type = CommitableNodeWindow;
     using PtrType = std::shared_ptr<Type>;
@@ -64,7 +66,7 @@ namespace fr::Imgui {
         ImVec2 rightAnchor(_currentSize.x, 25.0);
         _rightAnchor->setCenter(screenCoordinate(rightAnchor));
       });
-      _subscriptions.push_back(sub);
+      _subscriptions.push_back(std::move(sub));
       Parent::init();
     }
 
