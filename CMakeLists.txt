@@ -97,7 +97,6 @@ if (EMSCRIPTEN)
 
   set(CMAKE_EXECUTABLE_SUFFIX ".html")
   list(APPEND COMPILER_OPTIONS
-    #    "-fwasm-exceptions"
     "-pthread"
     "-sUSE_PTHREADS=1"
     "-sNO_EXIT_RUNTIME=0"
@@ -110,6 +109,7 @@ if (EMSCRIPTEN)
     "-sUSE_WEBGL2=1"
     "-sFULL_ES3=1"
     "-Wno-deprecated-declarations"
+    "-Wno-unused-command-line-argument"
     "-DNO_LOAD_SAVE_JSON"
     "-DNO_SQL"
   )
