@@ -24,7 +24,7 @@ Currently this is just a checkpoint commit into git.
    that I've implemented.
  * Load/Save to database
  * Load/Save to JSON file
- * Load from REST
+ * Load/Save to REST service
  * Window placement on-load is a bit crap right now.
  * There's no way to close nodes or otherwise make them go away
    other than exiting the program.
@@ -37,8 +37,8 @@ Currently this is just a checkpoint commit into git.
  * Provide load/save support
    ** To SQL database - Done. This will always be native build only.
    ** Export to JSON - Done for Native build (May do emscripten too.)
-   ** Load/Save to REST - Load works in emscripten and natively.
-      Still need to implement a POST to save back to the server.
+   ** Load/Save to REST - Load and Save work in emscripten,
+      native REST load/save is implemented but still needs testing.
  * Native and emscripten builds (Done)
  * Learn more about Imgui (Done :-)
  * Demonstrate a non-trivial full-stack application written entirely
@@ -48,15 +48,6 @@ Currently this is just a checkpoint commit into git.
    nginx ssl proxying to the REST service so you can actually
    use it with the web app.
    
-## Bugs
-
- * Saving to the REST does not currently work from the web app.
-   I can post JSON data to the REST endpoint with curl, so the
-   REST service is working as well as can be expected for the 
-   amount of time I spent on it, but there's a bug in the
-   Emscripten REST access stuff I built that I need to track
-   down. I should have that sorted out shortly.
-
 ## Notes:
 
 I don't usually do that much front end, so my Gui code is probably
