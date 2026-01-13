@@ -116,8 +116,15 @@ using this in a browser environment, you'll need to renew the
 certificate, rebuild the image and re-trust the certificate
 in your browser every 90 days.
 
+# 4. Change the server name in the nginx.conf file.
 
-# 4. Build the image
+If you want to access the application from another system on your
+subnet, you'll probably want to change the hard coded IP address
+(192.168.1.16) to whatever your IP address / local subnet DNS name
+is. This can be found in the nginx.conf file here. I'm actually not
+100% sure it matters in this environment.
+
+# 5. Build the image
 
 
 In this directory, run:
@@ -131,7 +138,7 @@ build. Any parameters you add after ./BuildDocker.sh will be
 passed on to docker build.
 
 
-# 5. Run this image
+# 6. Run this image
 
 In this directory run:
 
