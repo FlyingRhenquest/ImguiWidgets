@@ -17,7 +17,7 @@ Currently this is just a checkpoint commit into git.
 ## Whats here RIGHT NOW
 
  * Emscripten support to build and run this in your browser.
-   See the Emscripten notes in the docs directory.
+   See the Emscripten notes in the RequirementsManager/docs directory.
  * Widgets to support editing RequirementsManager Nodes. All current
    RequirementsManager Nodes are implemented.
  * NodeEditorWindow that can create the current Node Windows
@@ -44,6 +44,18 @@ Currently this is just a checkpoint commit into git.
  * Demonstrate a non-trivial full-stack application written entirely
    in C++ that runs and looks the same both natively and in a web
    browser (Done)
+ * Provide a reference docker build with certificate setup and
+   nginx ssl proxying to the REST service so you can actually
+   use it with the web app.
+   
+## Bugs
+
+ * Saving to the REST does not currently work from the web app.
+   I can post JSON data to the REST endpoint with curl, so the
+   REST service is working as well as can be expected for the 
+   amount of time I spent on it, but there's a bug in the
+   Emscripten REST access stuff I built that I need to track
+   down. I should have that sorted out shortly.
 
 ## Notes:
 

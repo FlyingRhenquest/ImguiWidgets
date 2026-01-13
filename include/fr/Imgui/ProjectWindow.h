@@ -45,7 +45,8 @@ namespace fr::Imgui {
 
     void init() override {
       if (!_node) {
-        _node = std::make_shared<fr::RequirementsManager::Project>();        
+        _node = std::make_shared<fr::RequirementsManager::Project>();
+        _node->init();
       }
       auto node = dynamic_pointer_cast<fr::RequirementsManager::Project>(_node);
       if (node) {

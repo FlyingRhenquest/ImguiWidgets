@@ -22,8 +22,13 @@
 #include <unordered_map>
 #include <vector>
 
+namespace fr::Imgui {
+  class GraphNodeWindow;
+}
+
 namespace fr::Imgui::Registration {
 
+  
   /**
    * Record provides a way for individual windows
    * to register how they should be created in a manner that
@@ -58,7 +63,6 @@ namespace fr::Imgui::Registration {
      */
     
     static constexpr ImVec2 startingSize() { return ImVec2(300,200); }
-
     
   };
 
@@ -96,9 +100,17 @@ namespace fr::Imgui::Registration {
 
   template <typename EditorType, typename WindowType>
   requires has_init<WindowType> && has_add<EditorType>
-  void createWindow(EditorType& editor) {
+  void createWindow(EditorType& editor) {    
     auto window = std::make_shared<WindowType>();
     window->init();
+    // Graph windows need to have their GraphNodeFactory set so they can
+    // save to REST
+    // TODO: I really should probably just add editor as a parameter to
+    // Record<WindowType>::init and call it in the window init for windows
+    // that need it. There will probably be others.
+    if constexpr(std::is_same_v<GraphNodeWindow,WindowType>) {
+      window->setFactory(editor.getGraphNodeFactory());
+    }
     auto startingSize = fr::Imgui::Registration::Record<WindowType>::startingSize();
     window->setStartingSize(startingSize.x, startingSize.y);
     fr::Imgui::Registration::Record<WindowType>::init(window);

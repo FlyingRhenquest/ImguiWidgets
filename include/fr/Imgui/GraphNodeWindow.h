@@ -19,6 +19,7 @@
 #include <fr/Imgui/NodeWindow.h>
 #include <fr/Imgui/NodeEditorWindow.h>
 #include <fr/RequirementsManager/GraphNode.h>
+#include <fr/RequirementsManager/RestFactoryApi.h>
 #include <fstream>
 #include <iostream>
 #include <type_traits>
@@ -54,6 +55,9 @@ namespace fr::Imgui {
     // GraphNodeFactory raw pointer -- I don't own this and can
     // be sure it will exist for the duration of the application.
     // I use this to POST the graph to REST, if it's not null.
+    // It comes from RestFactoryApi.h, which can be a factory
+    // that queries Pistache or a factory that uses emscripten
+    // depending on how this is compiled.
     fr::RequirementsManager::GraphNodeFactory *_factory;
     using WorkerThread = fr::RequirementsManager::WorkerThread;
     using ThreadPool = fr::RequirementsManager::ThreadPool<WorkerThread>;

@@ -26,6 +26,7 @@
 #include <fr/Imgui/GridWindow.h>
 #include <fr/Imgui/RestLocator.h>
 #include <fr/Imgui/WindowFactory.h>
+#include <fr/RequirementsManager/RestFactoryApi.h>
 #include <fr/types/Concepts.h>
 #include <fr/types/Typelist.h>
 #include <fstream>
@@ -78,6 +79,10 @@ namespace fr::Imgui {
     ImVec2 _fileDialogSize;
     fr::Imgui::WindowFactory<WindowList> _factory;
     std::shared_ptr<RestLocator<WindowList>> _restWindow;
+    // I need to pass this to any graph node windows I open so they can save
+    // to REST. I get this from RestLocator (RestLocator sets it when
+    // I call addEditorWindow)
+    fr::RequirementsManager::GraphNodeFactory* _graphNodeFactory;
 
 #ifndef NO_SQL    
     std::shared_ptr<WindowFactoryWindow<WindowList>> _databaseFactory;
@@ -101,6 +106,7 @@ namespace fr::Imgui {
     std::shared_ptr<fr::RequirementsManager::ThreadPool<fr::RequirementsManager::WorkerThread>> threadpool;
 
     NodeEditorWindow(const std::string &label = "Node Editor") : Parent(label) {
+      _graphNodeFactory = nullptr;
 #ifndef NO_SQL      
       _databaseFactory = std::make_shared<WindowFactoryWindow<WindowList>>();
       threadpool = std::make_shared<fr::RequirementsManager::ThreadPool<fr::RequirementsManager::WorkerThread>>();
@@ -112,6 +118,14 @@ namespace fr::Imgui {
       _fileDialogSize.y = 400;
     }
 
+    void setGraphNodeFactory(fr::RequirementsManager::GraphNodeFactory* factory) {
+      _graphNodeFactory = factory;
+    }
+
+    fr::RequirementsManager::GraphNodeFactory* getGraphNodeFactory() {
+      return _graphNodeFactory;
+    }
+    
     template <typename List>
     requires fr::types::IsUnique<List>
     void buildMenus() {

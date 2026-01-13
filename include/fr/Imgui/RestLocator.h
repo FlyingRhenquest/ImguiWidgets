@@ -175,6 +175,7 @@ namespace fr::Imgui {
     void addEditorWindow(NodeEditorWindow<WindowList> *editor) {
       _windowFactory->addEditorWindow(editor);
       _windowFactory->addNodeFactory(&_graphFactory);
+      editor->setGraphNodeFactory(&_graphFactory);
     }
 
     // Enables displaying/closing this window
