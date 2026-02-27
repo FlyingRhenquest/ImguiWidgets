@@ -45,9 +45,9 @@ fi
 echo "Checking CSR"
 if [ ! -e RequirementsManagerServer.csr ]; then
     echo "Creating signing request"
-    openssl req -new -key RequirementsManagerServer.key -out RequirementsManagerServer.csr
+    openssl req -new -key RequirementsManagerServer.key -out RequirementsManagerServer.csr -subj "/CN=localhost" -addext "subjectAltName = DNS:localhost"
     # And also sign the certificate
-    openssl x509 -req -in RequirementsManagerServer.csr -CA RequirementsManager.pem -CAkey RequirementsManager.key -CAcreateserial -out RequirementsManagerServer.crt -days 365 -sha256 -extfile RequirementsManagerServer.ext
+    openssl x509 -req -in RequirementsManagerServer.csr -CA RequirementsManager.pem -CAkey RequirementsManager.key -CAcreateserial -out RequirementsManagerServer.crt -days 365 -sha256
 fi
 
 # Build server bundle if it doesn't exist

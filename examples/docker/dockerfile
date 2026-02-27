@@ -7,7 +7,7 @@
 # 
 FROM debian:forky-slim
 
-COPY RequirementsManager-0.1-Linux.deb /tmp
+COPY FRImguiWidgets-0.1-Linux.deb /tmp
 COPY RunServices.sh /bin
 RUN chmod 755 /bin/RunServices.sh
 RUN apt-get update
@@ -29,7 +29,7 @@ RUN chmod 755 /var/lib/postgres
 RUN sed -i 's/^%sudo.*/%sudo ALL=(ALL:ALL) NOPASSWD: ALL/' /etc/sudoers
 RUN usermod -aG sudo postgres
 
-RUN dpkg -i /tmp/RequirementsManager-0.1-Linux.deb
+RUN dpkg -i /tmp/FRImguiWidgets-0.1-Linux.deb
 USER postgres
 
 ENTRYPOINT ["/bin/RunServices.sh"]
