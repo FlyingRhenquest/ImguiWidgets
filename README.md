@@ -1,18 +1,27 @@
 # ImguiWidgets
 
-This is a collection of ImGui widgets to support a GUI for my Requirements
-Manager project. I'm currently building out display window support for
-the various node types RequirementsManager supports.
+This is a simple full-stack Imgui node editor for my RequirementsManager
+project. This can be built natively or with the emscripten SDK. The
+Imgui widgets here include the application window that presents a 
+menu bar along the top and draws a grid, and unique windows for each
+of the data types in RequirementsManager.
 
-The initial development is for a data editor in which you will be able
-to create a graph of nodes and link the nodes together. I'm quite
-curious to see whether I can build this in web assembly and send
-JSON data over to it via a rest service. Once the graph editor is
-complete, I'll work on other data views as well. The graph editor will
-be the generic approach that just lets you build out your nodes
-however you want.
+Included is a examples directory with some scripts and a docker file
+that will proxy the REST service built in RequirementsManager and
+serve the GraphEditor WASM code. There needs to be some SSL stuff
+set up for that to work, which the scripts will do for you. You can
+import the SSL .pem file that gets generated into your browser
+(See the warnings about that directory) so you don't get warnings
+or errors when running the emscripten version of the code in your
+browser.
 
-Currently this is just a checkpoint commit into git.
+The UI looks like this when built natively:
+
+![Native App](screenshots/NativeWindow.png)
+
+When run in the browser, it looks like this:
+
+![Browser App](screenshots/BrowserWindow.png)
 
 ## Whats here RIGHT NOW
 
@@ -85,14 +94,13 @@ window File menu can load from the database or JSON.
 
  * Docker images of the entire system so you can play with it
    without having to build it.
- * SSL Support via ngnix port forwarding (in the docker images)
  * Keycloak authentication support (in the docker images)
- * Have ngnix also serve the webasm binaries (in the docker images)
  * Do something about Window placement.
  * Implement a way to close graphs without having to exit.
  * Do something about window placement.
  * Add Copyright window for the GUI so I can cite the various
    MIT/Apache licensed dependencies in the GUI.
+ * Did I mention I should do something about the window placement?
  * Implement other views of graphs as there are several useful
    domains that will be represented in node data.
- * Python API
+ * Python API for the GUI
